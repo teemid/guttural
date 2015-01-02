@@ -13,9 +13,9 @@ static VirtualMachine * init_vm ( VirtualMachine * vm, int * code )
     vm->frame_pointer = -1;
 
     vm->code = code;
-    vm->globals = malloc( sizeof(int) * NUM_GLOBALS );
+    vm->globals = (int*)malloc( sizeof(int) * NUM_GLOBALS );
 
-    vm->stack = malloc( sizeof(int) * STACK_SIZE );
+    vm->stack = (int*)malloc( sizeof(int) * STACK_SIZE );
 }
 
 
@@ -56,19 +56,14 @@ void eval_code( int * code, int start_addr, int length )
     int a;
     int b;
     int run = 1;
+    int program_counter;
 
     vm.program_counter = start_addr;
 
-    #ifdef TRACE
-    
-    int program_counter = vm.program_counter;
-    
-    #endif
-
-    while ( vm.program_counter < length && run )
+    do
     {
         #ifdef TRACE
-        program_counter = vm.program_counter;
+        program_counter = vm.program_counter; // Saving the current program counter for print out, in case it is incremented in the current operation.
         #endif
 
         opcode = vm.code[vm.program_counter++]; // Fetch and increment program counter
@@ -210,7 +205,7 @@ void eval_code( int * code, int start_addr, int length )
         print_stack( &vm );
 
         #endif
-    } // while ( vm.program_counter < length )
+    } while ( vm.program_counter < length && length );
 
     cleanup_vm( &vm );
 }
