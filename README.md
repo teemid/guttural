@@ -1,4 +1,4 @@
-furry-octo-dubstep
-==================
+guttural
+========
 
 A stack machine written in C.
