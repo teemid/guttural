@@ -1,4 +1,4 @@
 guttural
 ========
 
-A stack machine written in C.
+A small toy scripting language.
