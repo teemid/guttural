@@ -1,0 +1,8 @@
+function example (arg1)
+    print(arg1)
+end
+
+
+example(1)
+example("hello world")
+example(1.0)

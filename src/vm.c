@@ -49,7 +49,7 @@ static void print_globals( VirtualMachine * vm )
 #define POP() (vm.stack[vm.stack_pointer--])
 
 
-void eval_code( int * code, int start_addr, int length )
+void execute( int * code, int start_addr, int length )
 {
     VirtualMachine vm; init_vm( &vm, code );
     int opcode;
@@ -70,72 +70,42 @@ void eval_code( int * code, int start_addr, int length )
 
         switch (opcode)
         {
-            case OP_IADD:
+            case OP_ADD:
             {
                 b = POP();
                 a = POP();
                 PUSH(a + b);
-                break;
-            }
-            case OP_ISUB:
+            } break;
+            case OP_SUB:
             {
                 b = POP();
                 a = POP();
                 PUSH(a - b);
-                break;
-            }
-            case OP_IMUL:
+            } break;
+            case OP_MUL:
             {
                 b = POP();
                 a = POP();
                 PUSH(a * b);
-                break;
-            }
-            case OP_IDIV:
+            } break;
+            case OP_DIV:
             {
                 b = POP();
                 a = POP();
                 PUSH(a / b);
-                break;
-            }
-            case OP_ILT:
+            } break;
+            case OP_LT:
             {
                 b = POP();
                 a = POP();
                 PUSH(a < b);
-                break;
-            }
-            case OP_IEQ:
+            } break;
+            case OP_EQ:
             {
                 b = POP();
                 a = POP();
                 PUSH(a == b);
-                break;
-            }
-            case OP_BR:
-            {
-                vm.program_counter = vm.code[vm.program_counter];
-                break;
-            }
-            case OP_BRT:
-            {
-                a = POP();
-                b = vm.code[vm.program_counter++];
-                if (a) vm.program_counter = b;
-                break;
-            }
-            case OP_BRF:
-            {
-                a = POP();
-                b = vm.code[vm.program_counter++];
-                if (!a) vm.program_counter = b;
-                break;
-            }
-            case OP_ICONST:
-            {
-                PUSH(vm.code[vm.program_counter++]);
-                break;
-            }
+            } break;
             case OP_CALL:
             {
                 a = vm.code[vm.program_counter++];      // Get address.
@@ -144,8 +114,7 @@ void eval_code( int * code, int start_addr, int length )
                 PUSH(vm.program_counter);               // Remember where we were before the call.
                 vm.frame_pointer = vm.stack_pointer;    // Set the frame pointer to the current stack pointer.
                 vm.program_counter = a;                 // Jump to the function code.
-                break;
-            }
+            } break;
             case OP_RETURN:
             {
                 a = POP();                              // Get the return value;
@@ -155,52 +124,44 @@ void eval_code( int * code, int start_addr, int length )
                 b = POP();                              // Get number of arguments.
                 vm.stack_pointer -= b;                  // Drop the arguments from the stack.
                 PUSH(a);                                // Leave the call result on the stack.
-                break;
-            }
+            } break;
             case OP_LOAD:
             {
                 a = vm.code[vm.program_counter++];      // Offset
                 PUSH(vm.stack[vm.frame_pointer + a]);
-                break;
-            }
+            } break;
             case OP_STORE:
             {
                 a = vm.code[vm.program_counter++];      // Offset
                 vm.stack[vm.frame_pointer + a] = POP();
-                break;
-            }
+            } break;
             case OP_GLOAD:
             {
                 a = vm.code[vm.program_counter++];      // Offset
                 PUSH(vm.globals[a]);
-                break;
-            }
+            } break;
             case OP_GSTORE:
             {
                 a = vm.code[vm.program_counter++];      // Offset
                 vm.globals[a] = POP();
-                break;
-            }
+            } break;
             case OP_PRINT:
             {
                 a = POP();
                 printf("\n%d\n\n", a);
-                break;
-            }
+            } break;
             case OP_POP:
             {
                 POP();
-                break;
-            }
+            } break;
             case OP_HALT:
             {
                 run = 0;
-                break;
-            }
+            } break;
         } // switch (opcode)
 
         #ifdef TRACE
-        
+
         printf("%04d \t %s", program_counter, opcode_names[opcode]);
         print_stack( &vm );
 

@@ -2,16 +2,12 @@
 #define opcode_h
 
 typedef enum {
-    OP_IADD,
-    OP_ISUB,
-    OP_IMUL,
-    OP_IDIV,
-    OP_ILT,
-    OP_IEQ,
-    OP_BR,          // Branch
-    OP_BRT,         // Branch if true
-    OP_BRF,
-    OP_ICONST,      // Push constant integer
+    OP_ADD,
+    OP_SUB,
+    OP_MUL,
+    OP_DIV,
+    OP_LT,
+    OP_EQ,
     OP_CALL,
     OP_RETURN,
     OP_LOAD,
@@ -20,7 +16,8 @@ typedef enum {
     OP_GSTORE,
     OP_PRINT,
     OP_POP,
-    OP_HALT
+    OP_HALT,
+    OP_MAX_OPCODE
 } OpCode;
 
 extern char const * opcode_names[];

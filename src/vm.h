@@ -18,6 +18,6 @@ typedef struct vm {
 } VirtualMachine;
 
 
-void eval_code( int * code, int start_addr, int length );
+void execute( int * code, int start_addr, int length );
 
 #endif

@@ -2,16 +2,12 @@
 
 
 char const * opcode_names[] = {
-    "IADD",
-    "ISUB",
-    "IMUL",
-    "IDIV",
-    "ILT",
-    "IEQ",
-    "BR",
-    "BRT",
-    "BRF",
-    "ICONST",
+    "ADD",
+    "SUB",
+    "MUL",
+    "DIV",
+    "LT",
+    "EQ",
     "CALL",
     "RETURN",
     "LOAD",
@@ -21,4 +17,5 @@ char const * opcode_names[] = {
     "PRINT",
     "POP",
     "HALT",
+    "MAX_OPCODE"
 };
