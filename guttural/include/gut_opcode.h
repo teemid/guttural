@@ -1,0 +1,18 @@
+#ifndef GUTTURAL_OPCODE_H
+#define GUTTURAL_OPCODE_H
+
+
+enum GutturalOpCode
+{
+    OP_ADD,
+    OP_SUB,
+    OP_MUL,
+    OP_DIV,
+    OP_CALL
+} GutturalOpCode;
+
+
+extern char const * const guttural_opcodes[];
+
+
+#endif

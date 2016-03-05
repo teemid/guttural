@@ -1,0 +1,13 @@
+a = []
+
+a.push(1)
+a.push('a')
+a.push(3.0)
+a.push('hello')
+a.push(5)
+
+a.remove('a')
+
+for elem in a do
+    print(elem)
+end
