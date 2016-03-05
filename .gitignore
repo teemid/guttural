@@ -1,6 +1,9 @@
 # Project specific
 build
 
+# Visual Studio
+*.pdb
+
 # Object files
 *.o
 *.ko
