@@ -2,25 +2,49 @@
 #include "gut_memory.h"
 
 
-void guttural_array_init (GutturalArray * array)
-{
+#define Increment(variable) (variable) += 1
+#define Decrement(variable) (variable) -= 1
 
+#define CheckArraySize(array) \
+    if (array->size == array->length) \
+    { \
+        array->data = (GutTValue *)REALLOC(array->data, array->size * 2); \
+    }
+
+
+void GutArrayInit (GutArray * array)
+{
+    array->data = (GutTValue *)MALLOC(DEFAULT_INITIAL_ARRAY_SIZE);
+    array->size = DEFAULT_INITIAL_ARRAY_SIZE;
+    array->length = 0;
 }
 
 
-void guttural_array_push (GutturalArray * array, GutturalValue value)
+void GutArrayPush (GutArray * array, GutTValue value)
 {
-
+    CheckArraySize(array)
+    *(array->data + array->length) = value;
+    Increment(array->length);
 }
 
 
-void guttural_array_pop (GutturalArray * array)
+void GutArrayInser (GutArray * array, GutTValue value, UInt32 position)
 {
+    MOVE(array->data + position, array->data + (position + 1), array->length - position);
+}
 
+GutTValue GutArrayPop (GutArray * array)
+{
+    Decrement(array->length);
+
+    return *(array->data + array->length);
 }
 
 
-void guttural_array_delete (GutturalArray * array)
+GutTValue GutArrayRemove (GutArray * array, UInt32 position)
 {
+    GutTValue value = *(array->data + position);
+    MOVE(array->data + (position + 1), array->data + position, array->length - position);
 
+    return value;
 }

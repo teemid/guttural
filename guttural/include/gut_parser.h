@@ -8,10 +8,10 @@
 typedef struct GutturalParserState
 {
     GutturalLexerState * state;
-} GutturalParserState;
+} GutParserState;
 
 
-void guttural_parser_init (GutturalParserState * state);
+void GutParserInit (GutParserState * state);
 
 
 #endif

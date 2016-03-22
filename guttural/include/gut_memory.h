@@ -2,13 +2,18 @@
 #define GUTTURAL_MEMORY_H
 
 #include <stdlib.h>
+#include <string.h>
+
 
 #ifdef GUTTURAL_DEBUG
 
-#define MALLOC(type, bytes) (type)malloc(bytes)
-#define REALLOC(type, memory, bytes) (type)realloc(memory, bytes)
+#define MALLOC(bytes) malloc(bytes)
+#define REALLOC(memory, bytes) realloc(memory, bytes)
 #define CALLOC(type)
 #define FREE(memory) free(memory)
+
+#define COPY(source, destination, size) memcpy(destination, source, size)
+#define MOVE(source, destination, size) memmove(destination, source, size)
 
 #else
 

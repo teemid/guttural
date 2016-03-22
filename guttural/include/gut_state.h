@@ -8,26 +8,26 @@
 
 typedef struct GutturalGlobalState
 {
-    GutturalFunction * functions;
-} GutturalGlobalState;
+    GutFunction * functions;
+} GutGlobalState;
 
 
-typedef GutturalTaggedValue * StkId;
+typedef GutTValue * StkId;
 
 
 typedef struct GutturalState
 {
-    int pc;
-    int sp;
-    int fp;
+    Int32 pc;
+    Int32 sp;
+    Int32 fp;
 
-    GutturalGlobalState * globalState;
+    GutGlobalState * globalState;
 
-    int stackSize;
-    int * stack;
+    Int32 stackSize;
+    Int32 * stack;
 
-    int * instructions;
-} GutturalState;
+    Int32 * instructions;
+} GutState;
 
 
 #endif

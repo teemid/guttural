@@ -2,6 +2,9 @@
 #define GUTTURAL_LEXER_H
 
 
+#include "gut_types.h"
+
+
 enum GutturalResered
 {
     TOKEN_FUNCTION,
@@ -15,9 +18,6 @@ enum GutturalResered
 };
 
 
-const char * const guttural_tokens[];
-
-
 enum GutturalTokenType {
     TOKEN_NUMBER = LAST_RESERVED,
     TOKEN_PLUS,
@@ -27,30 +27,32 @@ enum GutturalTokenType {
     TOKEN_IDENTIFIER
 };
 
+extern const char * const guttural_tokens[];
+
 
 typedef struct GutturalToken {
-    int type;
+    UInt32 type;
     char * data;
-} GutturalToken;
+} GutToken;
 
 
 typedef struct GutturalLexerState
 {
-    int current;
-    int linenumber;
-    GutturalToken t;
-    GutturalToken lookahead;
-    int stack_top;
-    int stack_base;
-    int stack_last;
+    Int32 current;
+    Int32 linenumber;
+    GutToken token;
+    GutToken lookahead;
+    Int32 stack_top;
+    Int32 stack_base;
+    Int32 stack_last;
     char * input;
     char * source;
-} GutturalLexerState;
+} GutLexerState;
 
 
-void guttural_lexer_set_input (GutturalLexerState * state, char * input);
-void guttural_lexer_next (GutturalLexerState * state);
-void guttural_lexer_lookahead (GutturalLexerState * state);
+void GutLexerSetInput (GutLexerState * state, char * input);
+void GutLexerNext     (GutLexerState * state);
+void GutLexerPeek     (GutLexerState * state);
 
 
 #endif

@@ -3,7 +3,24 @@
 #include "gut_lexer.h"
 
 
-void guttural_lexer_set_input (GutturalLexerState * state, char * source)
+const char * const guttural_tokens[] = {
+    "TOKEN_FUNCTION",
+    "TOKEN_IF",
+    "TOKEN_END",
+    "TOKEN_ELSE",
+    "TOKEN_ELSEIF",
+    "TOKEN_TRUE",
+    "TOKEN_FALSE",
+    "TOKEN_NUMBER",
+    "TOKEN_PLUS",
+    "TOKEN_MINUS",
+    "TOKEN_MULT",
+    "TOKEN_DIV",
+    "TOKEN_IDENTIFIER"
+};
+
+
+void GutLexerSetInput (GutLexerState * state, char * source)
 {
     state->current = 0;
     state->linenumber = 0;
@@ -13,7 +30,7 @@ void guttural_lexer_set_input (GutturalLexerState * state, char * source)
     state->source = "";
 }
 
-void guttural_lexer_next (GutturalLexerState * state)
+void GutLexerNext (GutLexerState * state)
 {
 
 }
@@ -27,7 +44,7 @@ void guttural_lexer_next (GutturalLexerState * state)
 
 
 
-static void lex (GutturalLexerState * state)
+static void GutLex (GutLexerState * state)
 {
     char c;
 
@@ -46,15 +63,15 @@ static void lex (GutturalLexerState * state)
             case 'S': case 'T': case 'U': case 'V': case 'W': case 'X':
             case 'Y': case 'Z':
             {
-                state->t.type = TOKEN_IDENTIFIER;
+                state->token.type = TOKEN_IDENTIFIER;
             }
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
             {
                 while (is_number(state)) { }
 
-                state->t.type = TOKEN_NUMBER;
-                state->t.data = (void *)0;
+                state->token.type = TOKEN_NUMBER;
+                state->token.data = (void *)0;
             } return;
             case '\'': case '"':
             {

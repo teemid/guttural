@@ -4,7 +4,8 @@
 
 #include "gut_state.h"
 
-void execute( GutturalState * state );
+
+void GutVMExecute( GutState * state );
 
 
 #endif

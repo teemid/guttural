@@ -9,7 +9,7 @@ enum GutturalOpCode
     OP_MUL,
     OP_DIV,
     OP_CALL
-} GutturalOpCode;
+} GutOpCode;
 
 
 extern char const * const guttural_opcodes[];

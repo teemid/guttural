@@ -4,18 +4,23 @@
 #include "gut_object.h"
 
 
+#define DEFAULT_INITIAL_ARRAY_SIZE 20
+
+// NOTE (Emil): Each member is a tagged value, meaning an array is hetrogenous.
 typedef struct GutturalArray
 {
-    GutturalValue * data;
-    int length;
-} GutturalArray;
+    GutTValue * data;
+    UInt32 length;
+    UInt32 size;
+} GutArray;
 
 
-#define guttural_array_length(array_ptr) (array_ptr)->length
+#define Length(array_ptr) (array_ptr)->length
 
-void guttural_array_init (GutturalArray * array);
-void guttural_array_push (GutturalArray * array, GutturalValue value);
-void guttural_array_pop (GutturalArray * array);
-void guttural_array_delete (GutturalArray * array);
+void      GutArrayInit   (GutArray * array);
+void      GutArrayPush   (GutArray * array, GutTValue value);
+GutTValue GutArrayPop    (GutArray * array);
+void      GutArrayInsert (GutArray * array, GutTValue value, UInt32 position);
+GutTValue GutArrayRemove (GutArray * array, UInt32 position);
 
 #endif

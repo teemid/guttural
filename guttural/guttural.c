@@ -13,7 +13,7 @@ static char * read_source_file (char * filename)
     size_t size = ftell(file);
     rewind(file);
 
-    char * buffer = MALLOC(char *, size);
+    char * buffer = (char *)MALLOC(size);
 
     size_t result = fread(buffer, 1, size, file);
 
@@ -39,19 +39,19 @@ int main (int argc, char ** argv)
 
     for (int i = 0; i < argc; i++)
     {
-        printf(argv[i] + '\n');
+        printf("%s\n", argv[i]);
     }
 
     char * buffer = read_source_file(argv[1]);
 
     printf(buffer);
 
-    GutturalLexerState lexer;
-    guttural_lexer_set_input(&lexer, buffer);
+    GutLexerState lexer;
+    GutLexerSetInput(&lexer, buffer);
 
-    guttural_lexer_next(&lexer);
+    GutLexerNext(&lexer);
 
-    printf("%d", lexer.t.type);
+    printf("%s\n", guttural_tokens[lexer.token.type]);
 
     return 0;
 }

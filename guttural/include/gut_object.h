@@ -1,29 +1,45 @@
 #ifndef GUTTURAL_OBJECT_H
 #define GUTTURAL_OBJECT_H
 
-typedef struct GutturalArray GutturalArray;
 
+#include "gut_types.h"
+
+
+typedef struct GutturalArray GutArray;
+typedef struct GutturalHashTable GutTable;
+
+// Size of enum is compiler dependent?
+// Size of members equals sizeof(int)
 typedef enum GutturalType
 {
     ARRAY,
     NUMBER,
     DOUBLE,
     STRING
-} GutturalType;
+} GutType;
+
 
 typedef union GutturalValue
 {
-    int i;
-    double d;
+    Int32 i;
+    Real64 d;
     char * string;
-    GutturalArray * array;
-} GutturalValue;
+    GutArray * array;
+    GutTable * table;
+} GutValue;
+
 
 typedef struct GutturalTaggedValue
 {
-    GutturalValue value;
-    GutturalType type;
-} GutturalTaggedValue;
+    GutValue value;
+    GutType type;
+} GutTValue;
+
+
+#define Integer(value) value.i
+#define Double(value) value.d
+#define Array(value) value->array
+#define Table(value) value->table
 
 
 #endif
