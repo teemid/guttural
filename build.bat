@@ -6,6 +6,9 @@ SET SOURCE_FILES="%~dp0guttural\src\*.c"
 SET INCLUDE_DIR="%~dp0guttural\include\"
 
 
+IF NOT EXIST build mkdir build
+
+
 IF "%1" == "" GOTO end
 IF "%1" == "standalone" GOTO standalone
 IF "%1" == "msvc" GOTO msvc
@@ -15,7 +18,7 @@ IF "%1" == "msvc" GOTO clang
 :standalone
     SET STANDALONE_FILE = %~dp0guttural\guttural.c
     SET MACROS=/DGUTTURAL_DEBUG
-    SET COMPILER_FLAGS=/nologo /Zi /Fobuild\ /c /I "guttural\include" /Tcguttural\guttural.c
+    SET COMPILER_FLAGS=/nologo /Zi /Fobuild\ /Fdbuild\ /c /I "guttural\include" /Tcguttural\guttural.c
 
     FOR /r %%f IN ("guttural\src\*.c") DO cl %COMPILER_FLAGS% "%%f" %MACROS%
 
@@ -31,7 +34,7 @@ IF "%1" == "msvc" GOTO clang
 
 :msvc
     SET COMPILER=cl
-    SET CL_FLAGS=/nologo /I "guttural\include" /
+    SET CL_FLAGS=/nologo /I "guttural\include" /Fobuild\
     SET CL_MACROS=/DGUTTURAL_DEBUG
 
     FOR /r %%f IN (guttural\src\*.c) DO %COMPILER% %CL_FLAGS% "%%f" %CL_MACROS%
