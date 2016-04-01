@@ -1,0 +1,6 @@
+h = {}
+
+h['apples'] = 0
+h['oranges'] = 'Oranges'
+
+print(h['apples'] == h['oranges'])

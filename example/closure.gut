@@ -1,0 +1,13 @@
+function NewCounter ()
+    i = 0
+
+    return function ()
+        i += 1
+        return i
+    end
+end
+
+counter = NewCounter()
+
+print(counter())
+print(counter())

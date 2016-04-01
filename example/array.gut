@@ -1,15 +1,17 @@
-test_array = []
+a = []
 
-test_array.push(1)
-test_array.push('a')
-test_array.push(3.0)
-test_array.push('hello')
-test_array.push(5)
+a.push(1)
+a.push('a')
+a.push(3.0)
+a.push('hello')
+a.push(5)
 
-test_variable = test_array.pop()
+v = a.pop()
 
-test_array.remove('a')
+a.remove('a')
 
-for elem in test_array do
-    print(elem)
+for item in a do
+    print(item)
 end
+
+print(a[2])
