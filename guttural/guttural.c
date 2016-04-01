@@ -1,7 +1,5 @@
 #include <stdio.h>
-
 #include "gut_lexer.h"
-#include "gut_memory.h"
 
 
 static char * read_source_file (char * filename)

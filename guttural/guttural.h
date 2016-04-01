@@ -6,6 +6,9 @@
 #define GUTTURAL_COPYRIGHT "Copyright (C) 2015 Emil Grunt"
 #define GUTTURAL_AUTHOR "Emil Grunt"
 
+#include "gut_lexer.h"
+#include "gut_memory.h"
+
 void GutInit (GutState * state);
 
 #endif

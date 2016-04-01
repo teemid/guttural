@@ -17,17 +17,22 @@ typedef GutTValue * StkId;
 
 typedef struct GutturalState
 {
-    Int32 pc;
-    Int32 sp;
-    Int32 fp;
-
     GutGlobalState * globalState;
 
-    Int32 stackSize;
-    Int32 * stack;
+    Int32 stack_size;
+    StackPtr stack;
+
+    StackPtr program_counter;
+    StackPtr stack_pointer;
+    StackPtr frame_pointer;
 
     Int32 * instructions;
+
+    UByte c_func_count;
 } GutState;
+
+
+#define Global(gut_state) (gut_state)->globalState
 
 
 #endif

@@ -10,33 +10,14 @@
 
 static GutGlobalState * globals;
 
+#define GutPush(state, value) (state->stack[state->stack_pointer++] = (value))
+#define GutPop() (state->stack[state->stack_pointer--])
 
-static void GutVMInit ( GutState * state )
+
+void GutVMExecute(GutState * state)
 {
-    state->pc = 0;
-    state->sp = 0;
-    state->fp = 0;
+    for (;;)
+    {
 
-    state->stack = (int *)MALLOC(256 * sizeof(int));
+    }
 }
-
-
-static void GutVMCleanUp ( GutState * state )
-{
-}
-
-#ifdef TRACE
-
-static void GutPrintStack ( GutState * state )
-{
-
-}
-
-
-#endif
-
-#define push(state, value) (state->stack[state->sp++] = (value))
-#define pop() (state->stack[state->sp--])
-
-
-void GutVMExecute(GutState * state) { }

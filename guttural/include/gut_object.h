@@ -29,6 +29,9 @@ typedef union GutturalValue
 } GutValue;
 
 
+typedef GutValue * StackPtr;
+
+
 typedef struct GutturalTaggedValue
 {
     GutValue value;

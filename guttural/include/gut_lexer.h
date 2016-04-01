@@ -2,6 +2,7 @@
 #define GUTTURAL_LEXER_H
 
 
+#include "gut_state.h"
 #include "gut_types.h"
 
 
@@ -24,6 +25,9 @@ enum GutturalTokenType {
     TOKEN_MINUS,
     TOKEN_MULT,
     TOKEN_DIV,
+    TOKEN_OPEN_PAREN,
+    TOKEN_CLOSE_PAREN,
+    TOKEN_PERIOD,
     TOKEN_IDENTIFIER
 };
 
@@ -40,17 +44,19 @@ typedef struct GutturalLexerState
 {
     Int32 current;
     Int32 linenumber;
+
     GutToken token;
     GutToken lookahead;
-    Int32 stack_top;
-    Int32 stack_base;
-    Int32 stack_last;
+
+    GutState * state;
+    FunctionState * function;
+
     char * input;
     char * source;
 } GutLexerState;
 
 
-void GutLexerSetInput (GutLexerState * state, char * input);
+void GutLexerInit     (GutLexerState * state);
 void GutLexerNext     (GutLexerState * state);
 void GutLexerPeek     (GutLexerState * state);
 
