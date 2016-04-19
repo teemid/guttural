@@ -15,11 +15,13 @@ typedef struct GutturalHashTableNode
 
 typedef struct GutturalHashTable
 {
-    GutArray * nodes;
+    GutTableNode * nodes;
 } GutTable;
 
 
 void      GutTableAdd    (GutTable * table, void * key, GutTValue value);
 GutTValue GutTableRemove (GutTable * table, void * key);
+
+void GutTableResize (GutTable * table, UInt32 new_size);
 
 #endif

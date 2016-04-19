@@ -10,8 +10,4 @@ v = a.pop()
 
 a.remove('a')
 
-for item in a do
-    print(item)
-end
-
 print(a[2])

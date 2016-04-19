@@ -5,10 +5,11 @@
 #define Increment(variable) (variable) += 1
 #define Decrement(variable) (variable) -= 1
 
+#define GrowSize(size) (size * 2)
 #define CheckArraySize(array) \
     if (array->size == array->length) \
     { \
-        array->data = (GutTValue *)REALLOC(array->data, array->size * 2); \
+        array->data = (GutTValue *)REALLOC(array->data, GrowSize(array->size)); \
     }
 
 
@@ -28,7 +29,7 @@ void GutArrayPush (GutArray * array, GutTValue value)
 }
 
 
-void GutArrayInser (GutArray * array, GutTValue value, UInt32 position)
+void GutArrayInsert (GutArray * array, GutTValue value, UInt32 position)
 {
     MOVE(array->data + position, array->data + (position + 1), array->length - position);
 }

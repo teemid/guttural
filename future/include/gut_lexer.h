@@ -2,17 +2,17 @@
 #define GUTTURAL_LEXER_H
 
 
+#include "gut_state.h"
 #include "gut_types.h"
 
 
 enum GutturalResered
 {
     TOKEN_FUNCTION,
-    TOKEN_RETURN,
     TOKEN_IF,
-    TOKEN_ELSEIF,
-    TOKEN_ELSE,
     TOKEN_END,
+    TOKEN_ELSE,
+    TOKEN_ELSEIF,
     TOKEN_TRUE,
     TOKEN_FALSE,
     LAST_RESERVED
@@ -20,26 +20,16 @@ enum GutturalResered
 
 
 enum GutturalTokenType {
-    TOKEN_IDENTIFIER = LAST_RESERVED,
-    TOKEN_INTEGER,
-    TOKEN_DOUBLE,
-    TOKEN_STRING,
+    TOKEN_NUMBER = LAST_RESERVED,
     TOKEN_PLUS,
     TOKEN_MINUS,
     TOKEN_MULT,
     TOKEN_DIV,
-    TOKEN_EQ,
-    TOKEN_PAREN_OPEN,
-    TOKEN_PAREN_CLOSE,
-    TOKEN_SQUARE_OPEN,
-    TOKEN_SQUARE_CLOSE,
-    TOKEN_CURLY_OPEN,
-    TOKEN_CURLY_CLOSE,
+    TOKEN_OPEN_PAREN,
+    TOKEN_CLOSE_PAREN,
     TOKEN_PERIOD,
-    TOKEN_COMMA,
-    TOKEN_EOF
+    TOKEN_IDENTIFIER
 };
-
 
 extern const char * const guttural_tokens[];
 
@@ -52,18 +42,23 @@ typedef struct GutturalToken {
 
 typedef struct GutturalLexerState
 {
-    UInt32 colnumber;
-    UInt32 linenumber;
+    Int32 current;
+    Int32 linenumber;
 
     GutToken token;
     GutToken lookahead;
 
-    void * temp;
+    GutState * state;
+    GutFunction * function;
+
     char * input;
+    char * source;
 } GutLexerState;
 
-GutLexerInit     (GutLexerState * state);
-GutLexerSetInput (GutLexerState * state, char * input);
-GutLexerNext     (GutLexerState * state);
+
+void GutLexerInit     (GutLexerState * state);
+void GutLexerNext     (GutLexerState * state);
+void GutLexerPeek     (GutLexerState * state);
+
 
 #endif

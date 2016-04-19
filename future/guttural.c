@@ -1,8 +1,5 @@
 #include <stdio.h>
-
-#include "gut_memory.h"
 #include "gut_lexer.h"
-#include "gut_types.h"
 
 
 static char * read_source_file (char * filename)
@@ -14,8 +11,7 @@ static char * read_source_file (char * filename)
     size_t size = ftell(file);
     rewind(file);
 
-    char * buffer = MALLOC(char *, size + 1);
-    buffer[size] = 0;
+    char * buffer = MALLOC(char *, size);
 
     size_t result = fread(buffer, 1, size, file);
 
@@ -29,10 +25,6 @@ static char * read_source_file (char * filename)
     return buffer;
 }
 
-static PrintToken(GutLexerState * state)
-{
-    printf("%s\n", guttural_tokens[state->token.type]);
-}
 
 int main (int argc, char ** argv)
 {
@@ -53,20 +45,11 @@ int main (int argc, char ** argv)
     printf(buffer);
 
     GutLexerState lexer;
-    GutLexerInit(&lexer);
     GutLexerSetInput(&lexer, buffer);
 
-    while (1)
-    {
-        GutLexerNext(&lexer);
+    GutLexerNext(&lexer);
 
-        PrintToken(&lexer);
-
-        if (lexer.token.type == TOKEN_EOF)
-        {
-            break;
-        }
-    }
+    printf("%s\n", guttural_tokens[lexer.token.type]);
 
     return 0;
 }
