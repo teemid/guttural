@@ -1,4 +1,4 @@
 guttural
 ========
 
-A small toy scripting language.
+A small scripting language inspired by Lua and Python.
