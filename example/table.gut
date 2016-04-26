@@ -1,4 +1,4 @@
-h = {}
+let h = {}
 
 h['apples'] = 0
 h['oranges'] = 'Oranges'
