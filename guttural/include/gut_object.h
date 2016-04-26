@@ -22,15 +22,12 @@ typedef enum GutturalType
 
 typedef union GutturalValue
 {
-    Int32 i;
+    Int64 i;
     Real64 d;
     char * string;
     GutArray * array;
     GutTable * table;
 } GutValue;
-
-
-typedef GutValue * StackPtr;
 
 
 typedef struct GutturalTaggedValue
@@ -39,11 +36,13 @@ typedef struct GutturalTaggedValue
     GutType type;
 } GutTValue;
 
+typedef GutTValue * StackPtr;
 
-#define Integer(value) value.i
-#define Double(value) value.d
-#define Array(value) value->array
-#define Table(value) value->table
+
+#define Integer(tagged) tagged.value.i
+#define Double(tagged) tagged.value.d
+#define Array(tagged) tagged.value->array
+#define Table(tagged) tagged.value->table
 
 
 #endif

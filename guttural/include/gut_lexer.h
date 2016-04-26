@@ -5,16 +5,18 @@
 #include "gut_types.h"
 
 
-enum GutturalResered
+enum GutturalReserved
 {
-    TOKEN_FUNCTION,
-    TOKEN_RETURN,
-    TOKEN_IF,
-    TOKEN_ELSEIF,
     TOKEN_ELSE,
+    TOKEN_ELSEIF,
     TOKEN_END,
-    TOKEN_TRUE,
     TOKEN_FALSE,
+    TOKEN_FUNCTION,
+    TOKEN_IF,
+    TOKEN_LET,
+    TOKEN_RETURN,
+    TOKEN_THEN,
+    TOKEN_TRUE,
     LAST_RESERVED
 };
 
@@ -44,14 +46,22 @@ enum GutturalTokenType {
 extern const char * const guttural_tokens[];
 
 
+typedef union GutturalSemanticInformation {
+    Int64 i;
+    Real64 r;
+} GutSemInfo;
+
+
 typedef struct GutturalToken {
     UInt32 type;
-    char * data;
+    GutSemInfo * info;
 } GutToken;
 
 
 typedef struct GutturalLexerState
 {
+    UInt32 position;
+
     UInt32 colnumber;
     UInt32 linenumber;
 
@@ -62,8 +72,9 @@ typedef struct GutturalLexerState
     char * input;
 } GutLexerState;
 
-GutLexerInit     (GutLexerState * state);
-GutLexerSetInput (GutLexerState * state, char * input);
-GutLexerNext     (GutLexerState * state);
+
+GutLexerInit (GutLexerState * lexer);
+GutLexerPeek (GutLexerState * lexer);
+GutLexerNext (GutLexerState * lexer);
 
 #endif

@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-#include "gut_memory.h"
+#include "guttural.h"
 #include "gut_lexer.h"
-#include "gut_types.h"
+#include "gut_memory.h"
 
 
 static char * read_source_file (char * filename)
@@ -29,10 +29,43 @@ static char * read_source_file (char * filename)
     return buffer;
 }
 
+
 static PrintToken(GutLexerState * state)
 {
     printf("%s\n", guttural_tokens[state->token.type]);
 }
+
+
+void GutDoFile (GutState * state, char * filename)
+{
+    char * buffer = read_source_file(filename);
+
+    printf(buffer);
+
+    state->lexer->input = buffer;
+
+    while (1)
+    {
+        GutLexerNext(state->lexer);
+
+        Int32 type = state->lexer->token.type;
+
+        printf("%s\n", guttural_tokens[type]);
+
+        if (type == TOKEN_EOF)
+        {
+            break;
+        }
+    }
+}
+
+
+void PrintFunction (GutState * state)
+{
+    // Get the number of arguments.
+    GutTValue value = GutPop(state);
+}
+
 
 int main (int argc, char ** argv)
 {
@@ -43,30 +76,9 @@ int main (int argc, char ** argv)
         return 0;
     }
 
-    for (int i = 0; i < argc; i++)
-    {
-        printf("%s\n", argv[i]);
-    }
+    GutState * state = GutNewState();
 
-    char * buffer = read_source_file(argv[1]);
-
-    printf(buffer);
-
-    GutLexerState lexer;
-    GutLexerInit(&lexer);
-    GutLexerSetInput(&lexer, buffer);
-
-    while (1)
-    {
-        GutLexerNext(&lexer);
-
-        PrintToken(&lexer);
-
-        if (lexer.token.type == TOKEN_EOF)
-        {
-            break;
-        }
-    }
+    GutDoFile(state, argv[1]);
 
     return 0;
 }

@@ -5,14 +5,16 @@
 
 
 const char * const guttural_tokens[] = {
-    "TOKEN_FUNCTION",
-    "TOKEN_RETURN",
-    "TOKEN_IF",
-    "TOKEN_ELSEIF",
     "TOKEN_ELSE",
+    "TOKEN_ELSEIF",
     "TOKEN_END",
-    "TOKEN_TRUE",
     "TOKEN_FALSE",
+    "TOKEN_FUNCTION",
+    "TOKEN_IF",
+    "TOKEN_LET",
+    "TOKEN_RETURN",
+    "TOKEN_THEN",
+    "TOKEN_TRUE",
     "TOKEN_IDENTIFIER",
     "TOKEN_INTEGER",
     "TOKEN_DOUBLE",
@@ -35,20 +37,24 @@ const char * const guttural_tokens[] = {
 
 
 const char * const guttural_keywords[] = {
-    "function",
-    "return",
-    "if",
-    "elseif",
     "else",
+    "elseif",
     "end",
-    "true",
-    "false"
+    "false",
+    "function",
+    "if",
+    "let",
+    "return",
+    "then",
+    "true"
 };
 
+
 #define KeywordCount (sizeof(guttural_keywords) / sizeof(char *))
+#define internal static
 
 
-static void lex (GutLexerState * state);
+internal void lex (GutLexerState * state);
 
 
 static GutValue nil;
@@ -57,36 +63,35 @@ static GutValue nil;
 #define SetLookahead(state, gut_type) (state)->lookahead.type = (gut_type)
 
 
-GutLexerInit (GutLexerState * state)
+GutLexerInit (GutLexerState * lexer)
 {
-    state->colnumber = 0;
-    state->linenumber = 0;
+    lexer->position = 0;
+    lexer->colnumber = 0;
+    lexer->linenumber = 0;
 
-    SetTokenType(state, TOKEN_EOF);
-    SetLookahead(state, TOKEN_EOF);
+    SetTokenType(lexer, TOKEN_EOF);
+    SetLookahead(lexer, TOKEN_EOF);
 
-    state->input = NULL;
+    lexer->input = NULL;
 }
 
 
-GutLexerSetInput (GutLexerState * state, char * input)
+GutLexerNext (GutLexerState * lexer)
 {
-    state->input = input;
+    lex(lexer);
+}
+
+GutLexerPeek (GutLexerState * lexer)
+{
+    lex(lexer);
 }
 
 
-GutLexerNext (GutLexerState * state)
-{
-    lex(state);
-}
+#define Curr(lexer) (lexer)->input[(lexer)->position]
+#define Peek(lexer) (lexer)->input[(lexer)->position + 1]
 
-
-
-
-#define Curr(state) (state)->input[(state)->colnumber]
-#define Peek(state) (state)->input[(state)->colnumber + 1]
-
-#define Next(state) (state)->colnumber++;
+#define Next(lexer) (lexer)->position++;
+#define NewLine(lexer) (lexer)->linenumber++; (lexer)->colnumber = 0
 
 
 #define IsDigit(c) ('0' <= (c) && (c) <= '9')
@@ -98,7 +103,7 @@ GutLexerNext (GutLexerState * state)
 #define SetErrorMessage(message, line, col)
 
 
-static Bool32 CompareKeyword (char * start, char * end, const char * keyword)
+internal Bool32 CompareKeyword (char * start, char * end, const char * keyword)
 {
     UInt32 length = (end - start);
 
@@ -113,77 +118,77 @@ static Bool32 CompareKeyword (char * start, char * end, const char * keyword)
 }
 
 
-static void checkIfKeyword (GutLexerState * state, char * start, char * end)
+internal void checkIfKeyword (GutLexerState * lexer, char * start, char * end)
 {
     for (UInt32 i = 0; i < KeywordCount; i++)
     {
         if (CompareKeyword(start, end, guttural_keywords[i]))
         {
-            SetTokenType(state, i);
+            SetTokenType(lexer, i);
             return;
         }
     }
 }
 
 
-static void lexIdentifier (GutLexerState * state)
+internal void lexIdentifier (GutLexerState * lexer)
 {
-    char * start = &Curr(state);
+    char * start = &Curr(lexer);
 
-    char c = Curr(state);
+    char c = Curr(lexer);
     if (!IsValidIdentifierStart(c))
     {
-        SetErrorMessage("Not a valid identifier", state->linenumber, state->colnumber)
+        SetErrorMessage("Not a valid identifier", lexer->linenumber, lexer->colnumber)
     }
 
-    while (IsValidIdentifierContinuation(Curr(state)))
+    while (IsValidIdentifierContinuation(Curr(lexer)))
     {
-        Next(state);
+        Next(lexer);
     }
 
-    char * end = &Curr(state);
+    char * end = &Curr(lexer);
 
-    SetTokenType(state, TOKEN_IDENTIFIER);
+    SetTokenType(lexer, TOKEN_IDENTIFIER);
 
-    checkIfKeyword(state, start, end);
+    checkIfKeyword(lexer, start, end);
 }
 
 
-static void lexNumber (GutLexerState * state)
+internal void lexNumber (GutLexerState * lexer)
 {
-    char * start = &Curr(state);
+    char * start = &Curr(lexer);
 
-    while (IsDigit(Curr(state)))
+    while (IsDigit(Curr(lexer)))
     {
-        Next(state);
+        Next(lexer);
     }
 
-    SetTokenType(state, TOKEN_INTEGER);
+    SetTokenType(lexer, TOKEN_INTEGER);
 
-    if (Curr(state) == '.')
+    if (Curr(lexer) == '.')
     {
-        Next(state);
+        Next(lexer);
 
-        while (IsDigit(Curr(state)))
+        while (IsDigit(Curr(lexer)))
         {
-            Next(state);
+            Next(lexer);
         }
 
-        SetTokenType(state, TOKEN_DOUBLE);
+        SetTokenType(lexer, TOKEN_DOUBLE);
     }
 
-    char * end = &Curr(state);
+    char * end = &Curr(lexer);
 }
 
 
 // NOTE (Emil): Main lexer loop
-static void lex (GutLexerState * state)
+internal void lex (GutLexerState * lexer)
 {
     char c;
 
     for (;;)
     {
-        switch (c = Curr(state))
+        switch (c = Curr(lexer))
         {
             case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
             case 'g': case 'h': case 'i': case 'j': case 'k': case 'l':
@@ -197,115 +202,117 @@ static void lex (GutLexerState * state)
             case 'Y': case 'Z':
             case '_':
             {
-                lexIdentifier(state);
+                lexIdentifier(lexer);
             } return;
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
             {
-                lexNumber(state);
+                lexNumber(lexer);
             } return;
             case '\'': case '"':
             {
                 char delimiter = c;
-                Next(state);
+                Next(lexer);
 
-                while (Curr(state) != delimiter)
+                while (Curr(lexer) != delimiter)
                 {
-                    Next(state);
+                    Next(lexer);
                 }
 
-                SetTokenType(state, TOKEN_STRING);
-                Next(state);
+                SetTokenType(lexer, TOKEN_STRING);
+                Next(lexer);
             } return;
             case '+':
             {
-                SetTokenType(state, TOKEN_PLUS);
-                Next(state);
+                SetTokenType(lexer, TOKEN_PLUS);
+                Next(lexer);
             } return;
             case '-':
             {
-                SetTokenType(state, TOKEN_MINUS);
-                Next(state);
+                SetTokenType(lexer, TOKEN_MINUS);
+                Next(lexer);
             } return;
             case '*':
             {
-                SetTokenType(state, TOKEN_MULT);
-                Next(state);
+                SetTokenType(lexer, TOKEN_MULT);
+                Next(lexer);
             } return;
             case '/':
             {
-                SetTokenType(state, TOKEN_DIV);
-                Next(state);
+                SetTokenType(lexer, TOKEN_DIV);
+                Next(lexer);
             } return;
             case '=':
             {
-                SetTokenType(state, TOKEN_EQ);
-                Next(state);
+                SetTokenType(lexer, TOKEN_EQ);
+                Next(lexer);
             } return;
             case '(':
             {
-                SetTokenType(state, TOKEN_PAREN_OPEN);
-                Next(state);
+                SetTokenType(lexer, TOKEN_PAREN_OPEN);
+                Next(lexer);
             } return;
             case ')':
             {
-                SetTokenType(state, TOKEN_PAREN_CLOSE);
-                Next(state);
+                SetTokenType(lexer, TOKEN_PAREN_CLOSE);
+                Next(lexer);
             } return;
             case '[':
             {
-                SetTokenType(state, TOKEN_SQUARE_OPEN);
-                Next(state);
+                SetTokenType(lexer, TOKEN_SQUARE_OPEN);
+                Next(lexer);
             } return;
             case ']':
             {
-                SetTokenType(state, TOKEN_SQUARE_CLOSE);
-                Next(state);
+                SetTokenType(lexer, TOKEN_SQUARE_CLOSE);
+                Next(lexer);
             } return;
             case '{':
             {
-                SetTokenType(state, TOKEN_CURLY_OPEN);
-                Next(state);
+                SetTokenType(lexer, TOKEN_CURLY_OPEN);
+                Next(lexer);
             } return;
             case '}':
             {
-                SetTokenType(state, TOKEN_CURLY_CLOSE);
-                Next(state);
+                SetTokenType(lexer, TOKEN_CURLY_CLOSE);
+                Next(lexer);
             } return;
             case '.':
             {
-                SetTokenType(state, TOKEN_PERIOD);
-                Next(state);
+                SetTokenType(lexer, TOKEN_PERIOD);
+                Next(lexer);
             } return;
             case ',':
             {
-                SetTokenType(state, TOKEN_COMMA);
-                Next(state);
+                SetTokenType(lexer, TOKEN_COMMA);
+                Next(lexer);
             } return;
             case '\0':
             {
-                SetTokenType(state, TOKEN_EOF);
+                SetTokenType(lexer, TOKEN_EOF);
             } return;
             case '#':
             {
-                Next(state);
+                Next(lexer);
 
-                while (Curr(state) != '\n' && Curr(state) != '\r')
+                while (Curr(lexer) != '\n' && Curr(lexer) != '\r')
                 {
-                    Next(state);
+                    Next(lexer);
                 }
-                state->linenumber++;
+                lexer->linenumber++;
+                lexer->colnumber = 0;
             }
             case '\r': case '\n':
             {
-                if (Peek(state) == '\n')
+                if (Peek(lexer) == '\n')
                 {
-                    Next(state);
+                    Next(lexer);
                 }
-                state->linenumber++;
+                lexer->linenumber++;
+                lexer->colnumber = 0;
             }
         }
 
-        Next(state);
+        Next(lexer);
     }
 }
