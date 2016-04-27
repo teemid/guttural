@@ -14,13 +14,25 @@ IF "%1" == "standalone" GOTO standalone
 IF "%1" == "msvc" GOTO msvc
 IF "%1" == "msvc" GOTO clang
 
+REM Clang:
+REM -O0: No optimizations
+REM -c: Run preprocessor, parser, LLVM generation, assembler
+REM -g: Generate debug information
+REM -o: Write output to file
+REM -D: Adds an implicit #define into the predefines buffer which is read before the source file is preprocessed.
+REM -I: Adds a specified directory to the search path for include files.
+REM -std: Specify the language stanard to compile for.
+REM -ansi: Alias for -std=c89
+
 
 :standalone
     SET STANDALONE_FILE = %~dp0guttural\guttural.c
     SET MACROS=/DGUTTURAL_DEBUG
-    SET COMPILER_FLAGS=/nologo /Zi /Fobuild\ /Fdbuild\ /c /I "guttural\include" /Tcguttural\guttural.c
+    SET COMPILER_FLAGS=/nologo /Zi /Fobuild\ /Fdbuild\ /c /I "guttural\include"
 
     FOR /r %%f IN ("guttural\src\*.c") DO cl %COMPILER_FLAGS% "%%f" %MACROS%
+
+    cl %COMPILER_FLAGS% guttural\guttural.c %MACROS%
 
     PUSHD build
 
@@ -42,18 +54,7 @@ IF "%1" == "msvc" GOTO clang
     GOTO end
 
 :clang
-    REM -O0: No optimizations
-    REM -c: Run preprocessor, parser, LLVM generation, assembler
-    REM -g: Generate debug information
-    REM -o: Write output to file
-    REM -D: Adds an implicit #define into the predefines buffer which is read before the source file is preprocessed.
-    REM -I: Adds a specified directory to the search path for include files.
-    REM -std: Specify the language stanard to compile for.
-    REM -ansi: Alias for -std=c89
-
     SET CLANG_FLAGS=-O0 -g -c -I "guttural\include"
 
 :end
-    POPD
-
     ECHO "Finished"
