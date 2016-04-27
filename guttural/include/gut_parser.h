@@ -6,7 +6,7 @@
 #include "gut_state.h"
 
 
-void GutParse (GutState * state, GutLexerState * lexer);
+void GutParse (GutState * state);
 
 
 #endif

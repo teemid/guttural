@@ -1,5 +1,7 @@
+#include <stdlib.h>
 #include <stdio.h>
 
+#include "gut_common.h"
 #include "gut_lexer.h"
 #include "gut_object.h"
 
@@ -15,15 +17,15 @@ const char * const guttural_tokens[] = {
     "TOKEN_RETURN",
     "TOKEN_THEN",
     "TOKEN_TRUE",
+    "TOKEN_PLUS",
+    "TOKEN_MINUS",
+    "TOKEN_MUL",
+    "TOKEN_DIV",
+    "TOKEN_EQ",
     "TOKEN_IDENTIFIER",
     "TOKEN_INTEGER",
     "TOKEN_DOUBLE",
     "TOKEN_STRING",
-    "TOKEN_PLUS",
-    "TOKEN_MINUS",
-    "TOKEN_MULT",
-    "TOKEN_DIV",
-    "TOKEN_EQ",
     "TOKEN_PAREN_OPEN",
     "TOKEN_PARENT_CLOSE",
     "TOKEN_SQUARE_OPEN",
@@ -51,20 +53,19 @@ const char * const guttural_keywords[] = {
 
 
 #define KeywordCount (sizeof(guttural_keywords) / sizeof(char *))
-#define internal static
+
+#define SetTokenType(lexer, gut_type) (lexer)->token.type = (gut_type)
+#define SaveInteger(lexer, i) (lexer)->token.seminfo.i = (i)
+#define SetLookahead(lexer, gut_type) (lexer)->lookahead.type = (gut_type)
 
 
-internal void lex (GutLexerState * state);
+internal void lex (GutLexerState * lexer);
 
 
-static GutValue nil;
-
-#define SetTokenType(state, gut_type) (state)->token.type = (gut_type)
-#define SetLookahead(state, gut_type) (state)->lookahead.type = (gut_type)
-
-
-GutLexerInit (GutLexerState * lexer)
+void GutLexerInit (GutLexerState * lexer)
 {
+    static int v;
+
     lexer->position = 0;
     lexer->colnumber = 0;
     lexer->linenumber = 0;
@@ -76,14 +77,30 @@ GutLexerInit (GutLexerState * lexer)
 }
 
 
-GutLexerNext (GutLexerState * lexer)
+UInt32 GutLexerNext (GutLexerState * lexer)
 {
+    if (lexer->lookahead.type != TOKEN_EOF)
+    {
+        lexer->token = lexer->lookahead;
+        SetLookahead(lexer, TOKEN_EOF);
+
+        return lexer->token.type;
+    }
+
     lex(lexer);
+
+    return lexer->token.type;
 }
 
-GutLexerPeek (GutLexerState * lexer)
+// TODO (Emil): This feels like a dirty hack.
+UInt32 GutLexerPeek (GutLexerState * lexer)
 {
+    GutToken token = lexer->token;
     lex(lexer);
+    lexer->lookahead = lexer->token;
+    lexer->token = token;
+
+    return lexer->lookahead.type;
 }
 
 
@@ -178,6 +195,19 @@ internal void lexNumber (GutLexerState * lexer)
     }
 
     char * end = &Curr(lexer);
+
+    if (lexer->token.type == TOKEN_INTEGER)
+    {
+        char * parse_end;
+        int base = 10;
+
+        lexer->token.semantics.i = strtol(start, &parse_end, base);
+    }
+    else
+    {
+        char * parse_end;
+        lexer->token.semantics.r = strtod(start, &parse_end);
+    }
 }
 
 
@@ -234,7 +264,7 @@ internal void lex (GutLexerState * lexer)
             } return;
             case '*':
             {
-                SetTokenType(lexer, TOKEN_MULT);
+                SetTokenType(lexer, TOKEN_MUL);
                 Next(lexer);
             } return;
             case '/':

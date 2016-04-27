@@ -29,6 +29,7 @@ typedef struct GutturalState
     StackPtr frame_pointer;
 } GutState;
 
+
 #define Global(gut_state) (gut_state)->globalState
 
 

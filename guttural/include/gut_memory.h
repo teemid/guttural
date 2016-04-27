@@ -7,13 +7,12 @@
 
 #ifdef GUTTURAL_DEBUG
 
-#define MALLOC(type, bytes) (type)malloc(bytes)
-#define REALLOC(type, memory, bytes) (type)realloc(memory, bytes)
-#define CALLOC(type)
-#define FREE(memory) free(memory)
+#define Allocate(type, bytes) (type)malloc(bytes)
+#define Reallocate(type, memory, bytes) (type)realloc(memory, bytes)
+#define Free(memory) free(memory)
 
-#define COPY(source, destination, size) memcpy(destination, source, size)
-#define MOVE(source, destination, size) memmove(destination, source, size)
+#define Copy(source, destination, size) memcpy(destination, source, size)
+#define Move(source, destination, size) memmove(destination, source, size)
 
 #else
 

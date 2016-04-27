@@ -20,10 +20,13 @@ typedef enum GutturalType
 } GutType;
 
 
+extern char const * const guttural_types[];
+
+
 typedef union GutturalValue
 {
     Int64 i;
-    Real64 d;
+    Real64 r;
     char * string;
     GutArray * array;
     GutTable * table;
@@ -39,8 +42,14 @@ typedef struct GutturalTaggedValue
 typedef GutTValue * StackPtr;
 
 
+extern GutValue nil;
+
+
+#define Type(tagged) tagged.type
+
 #define Integer(tagged) tagged.value.i
-#define Double(tagged) tagged.value.d
+#define Double(tagged) tagged.value.r
+#define String(tagged) tagged.value.string
 #define Array(tagged) tagged.value->array
 #define Table(tagged) tagged.value->table
 

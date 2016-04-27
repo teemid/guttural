@@ -7,6 +7,7 @@
 
 typedef struct GutturalHashTableNode
 {
+    struct GutturalHashTableNode * next;
     UInt32 hash;
     void * key;
     GutTValue value;
@@ -21,11 +22,14 @@ typedef struct GutturalHashTable
 } GutTable;
 
 
-void      GutTableInit   (GutTable * table, size_t size);
-void      GutTableAdd    (GutTable * table, void * key, GutTValue value);
-GutTValue GutTableRemove (GutTable * table, void * key);
-void      GutTableDelete (GutTable * table);
+GutTable * GutTableNew    (size_t size);
+void       GutTableResize (GutTable * table, size_t new_size);
+void       GutTableDelete (GutTable * table);
 
-void GutTableResize (GutTable * table, UInt32 new_size);
+void       GutTableAdd    (GutTable * table, GutTValue * key, GutTValue value);
+GutTValue  GutTableRemove (GutTable * table, GutTValue * key);
+
+GutTValue  GutTableGet    (GutTable * table, GutTValue * key);
+
 
 #endif

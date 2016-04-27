@@ -22,15 +22,15 @@ enum GutturalReserved
 
 
 enum GutturalTokenType {
-    TOKEN_IDENTIFIER = LAST_RESERVED,
+    TOKEN_PLUS = LAST_RESERVED,
+    TOKEN_MINUS,
+    TOKEN_MUL,
+    TOKEN_DIV,
+    TOKEN_EQ,
+    TOKEN_IDENTIFIER,
     TOKEN_INTEGER,
     TOKEN_DOUBLE,
     TOKEN_STRING,
-    TOKEN_PLUS,
-    TOKEN_MINUS,
-    TOKEN_MULT,
-    TOKEN_DIV,
-    TOKEN_EQ,
     TOKEN_PAREN_OPEN,
     TOKEN_PAREN_CLOSE,
     TOKEN_SQUARE_OPEN,
@@ -54,7 +54,7 @@ typedef union GutturalSemanticInformation {
 
 typedef struct GutturalToken {
     UInt32 type;
-    GutSemInfo * info;
+    GutSemInfo semantics;
 } GutToken;
 
 
@@ -73,8 +73,9 @@ typedef struct GutturalLexerState
 } GutLexerState;
 
 
-GutLexerInit (GutLexerState * lexer);
-GutLexerPeek (GutLexerState * lexer);
-GutLexerNext (GutLexerState * lexer);
+void GutLexerInit (GutLexerState * lexer);
+UInt32 GutLexerNext (GutLexerState * lexer);
+UInt32 GutLexerPeek (GutLexerState * lexer);
+
 
 #endif
