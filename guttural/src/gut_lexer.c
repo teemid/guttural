@@ -55,7 +55,7 @@ const char * const guttural_keywords[] = {
 #define KeywordCount (sizeof(guttural_keywords) / sizeof(char *))
 
 #define SetTokenType(lexer, gut_type) (lexer)->token.type = (gut_type)
-#define SaveInteger(lexer, i) (lexer)->token.seminfo.i = (i)
+#define SaveInteger(token, i) (token).semantics.i = (i)
 #define SetLookahead(lexer, gut_type) (lexer)->lookahead.type = (gut_type)
 
 
@@ -170,6 +170,7 @@ internal void lexIdentifier (GutLexerState * lexer)
     checkIfKeyword(lexer, start, end);
 }
 
+internal int base = 10;
 
 internal void lexNumber (GutLexerState * lexer)
 {
@@ -199,8 +200,9 @@ internal void lexNumber (GutLexerState * lexer)
     if (lexer->token.type == TOKEN_INTEGER)
     {
         char * parse_end;
-        int base = 10;
 
+
+        // SaveInteger(lexer->token, strtol(start &parse_end, base));
         lexer->token.semantics.i = strtol(start, &parse_end, base);
     }
     else

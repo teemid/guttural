@@ -11,6 +11,7 @@
 typedef struct GutturalGlobalState
 {
     GutTable * variables;
+    GutTable * stringTable;
 } GutGlobalState;
 
 

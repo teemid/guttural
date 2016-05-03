@@ -1,4 +1,3 @@
-#include "gut_api.h"
 #include "gut_common.h"
 #include "gut_lexer.h"
 #include "gut_parser.h"
