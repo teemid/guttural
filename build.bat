@@ -12,7 +12,7 @@ IF NOT EXIST build mkdir build
 IF "%1" == "" GOTO end
 IF "%1" == "standalone" GOTO standalone
 IF "%1" == "msvc" GOTO msvc
-IF "%1" == "msvc" GOTO clang
+IF "%1" == "clang" GOTO clang
 
 REM Clang:
 REM -O0: No optimizations
@@ -28,7 +28,7 @@ REM -ansi: Alias for -std=c89
 :standalone
     SET STANDALONE_FILE = %~dp0guttural\guttural.c
     SET MACROS=/DGUTTURAL_DEBUG
-    SET COMPILER_FLAGS=/nologo /Zi /Fobuild\ /Fdbuild\ /c /I "guttural\include"
+    SET COMPILER_FLAGS=/nologo /Od /W4 /wd4127 /wd4996 /Zi /Fobuild\ /Fdbuild\ /c /I "guttural\include"
 
     FOR /r %%f IN ("guttural\src\*.c") DO cl %COMPILER_FLAGS% "%%f" %MACROS%
 
