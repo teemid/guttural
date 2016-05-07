@@ -4,5 +4,7 @@
 
 #define INITIAL_STACK_SIZE 256
 
+#define INITIAL_TABLE_SIZE 12
+
 
 #endif
