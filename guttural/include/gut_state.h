@@ -25,7 +25,7 @@ typedef struct GutturalState
     Int32 stack_size;
     StackPtr stack;
 
-    StackPtr program_counter;
+    UInt64 program_counter;
     StackPtr stack_pointer;
     StackPtr frame_pointer;
 } GutState;
