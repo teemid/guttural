@@ -8,8 +8,8 @@
 typedef struct GutturalArray
 {
     GutTValue * elements;
-    UInt64 capacity;
-    UInt64 count;
+    size_t capacity;
+    size_t count;
 } GutArray;
 
 
