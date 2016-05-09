@@ -1,10 +1,13 @@
 #ifndef GUTTURAL_COMMON_H
 #define GUTTURAL_COMMON_H
 
+
+#include <stdlib.h>
+
+
 #define internal static
 #define persist static
 
-#ifdef _WIN32
 #define Assert(statement) \
             if (!(statement)) \
             { \
@@ -12,6 +15,6 @@
                 abort(); \
             } \
             else { }
-#endif
+
 
 #endif
