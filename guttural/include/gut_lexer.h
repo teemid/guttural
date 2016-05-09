@@ -47,8 +47,8 @@ extern const char * const guttural_tokens[];
 
 
 typedef union GutturalSemanticInformation {
-    Int64 i;
-    Real64 r;
+    Int64 integer;
+    Real64 real;
 } GutSemInfo;
 
 

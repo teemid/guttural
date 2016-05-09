@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "gut_common.h"
 #include "gut_lexer.h"
@@ -195,20 +196,18 @@ internal void lexNumber (GutLexerState * lexer)
         SetTokenType(lexer, TOKEN_DOUBLE);
     }
 
-    char * end = &Curr(lexer);
-
     if (lexer->token.type == TOKEN_INTEGER)
     {
         char * parse_end;
 
 
         // SaveInteger(lexer->token, strtol(start &parse_end, base));
-        lexer->token.semantics.i = strtol(start, &parse_end, base);
+        lexer->token.semantics.integer = strtol(start, &parse_end, base);
     }
     else
     {
         char * parse_end;
-        lexer->token.semantics.r = strtod(start, &parse_end);
+        lexer->token.semantics.real = strtod(start, &parse_end);
     }
 }
 

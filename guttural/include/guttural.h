@@ -14,10 +14,14 @@ GutState * GutNewState (void);
 
 void GutDoFile (GutState * state, char * filename);
 
-void GutPushNil     (GutState * state);
-void GutPushInteger (GutState * state, Int64 i);
-void GutPushDouble  (GutState * state, Real64 d);
-void GutPushBoolean (GutState * state, Bool32 b);
+
+void GutPush (GutState * state, GutValue value, GutType type);
+
+#define GutPushNil(state)         GutPush(state, nil, TYPE_NIL)
+#define GutPushInteger(state, value)  GutValue v; v.i = (value); GutPush(state, v, TYPE_INTEGER)
+#define GutPushDouble(state, value)   GutValue v; v.d = (value); GutPush(state, v, TYPE_DOUBLE)
+#define GutPushBoolean(state, value)  GutValue v; v.b = (value); GutPush(state, v, TYPE_BOOLEAN)
+
 
 GutTValue GutPop (GutState * state);
 

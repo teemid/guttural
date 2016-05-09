@@ -3,6 +3,7 @@
 #include "gut_common.h"
 #include "gut_memory.h"
 #include "gut_state.h"
+#include "gut_parser.h"
 
 
 internal char * read_source_file (char * filename)

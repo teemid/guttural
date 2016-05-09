@@ -1,3 +1,6 @@
+#include <stdio.h>
+
+#include "guttural.h"
 #include "gut_common.h"
 #include "gut_lexer.h"
 #include "gut_parser.h"
@@ -14,22 +17,28 @@ void GutParse (GutState * state)
 
 #define Current(state)   (state)->lexer->token.type
 #define Lookahead(state) (state)->lexer->lookahead.type
-#define SemInfo(state)   (state)->lexer->token.semantics
+#define Semantics(state)   (state)->lexer->token.semantics
 
 #define Next(state) GutLexerNext((state)->lexer)
 #define Peek(state) GutLexerPeek((state)->lexer)
 
-// #define Type(state) (state)->lexer->token.type
-#define Value(state) (state)->lexer->token.semantics
-
-#define Expect(state, type) Assert(Current(state) == (type))
-#define IsType(token, type) (token).type
+#define Expect(token, token_type) Assert((token) == (token_type))
+#define IsType(token, token_type) ((token).type == (token_type))
 
 #define IsOperator(type) ( \
     ((type) == TOKEN_PLUS) || ((type) == TOKEN_MINUS) || \
     ((type) == TOKEN_MUL) || ((type) == TOKEN_DIV))
 
 
+
+internal void ParseDeclaration (GutState * state)
+{
+
+    Expect(Peek(state), TOKEN_IDENTIFIER);
+}
+
+
+/*
 internal void ParseStatement (GutState * state)
 {
 
@@ -40,13 +49,6 @@ internal void ParseAssignment (GutState * state)
 {
 
 }
-
-
-internal void ParseDeclaration (GutState * state)
-{
-
-}
-
 
 internal void ParseIfStatement (GutState * state)
 {
@@ -80,6 +82,7 @@ static Int32 operator_precedence[] = {
 
 
 #define Precedence(operator) operator_precedence[(operator) - LAST_RESERVED]
+*/
 
 
 internal void Parse (GutState * state)
@@ -93,12 +96,16 @@ internal void Parse (GutState * state)
             case TOKEN_INTEGER:
             case TOKEN_DOUBLE:
             {
-                printf("%s: %d \n", guttural_tokens[type], SemInfo(state).i);
+                printf("%s: %lld \n", guttural_tokens[type], Semantics(state).integer);
 
                 if (IsOperator(Peek(state)))
                 {
-                    GutPush(state, Value(state));
+                    GutPushInteger(state, Semantics(state).integer);
                 }
+            } break;
+            case TOKEN_LET:
+            {
+                ParseDeclaration(state);
             } break;
             case TOKEN_EOF:
             {
