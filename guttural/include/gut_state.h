@@ -34,8 +34,4 @@ typedef struct GutturalState
 #define Global(gut_state) (gut_state)->globalState
 
 
-#define Push(state, taggedValue) (state->stack[state->stack_pointer++] = (taggedValue))
-#define Pop() (state->stack[state->stack_pointer--])
-
-
 #endif

@@ -73,7 +73,7 @@ typedef struct GutturalLexerState
 } GutLexerState;
 
 
-void GutLexerInit (GutLexerState * lexer);
+void   GutLexerInit (GutLexerState * lexer);
 UInt32 GutLexerNext (GutLexerState * lexer);
 UInt32 GutLexerPeek (GutLexerState * lexer);
 

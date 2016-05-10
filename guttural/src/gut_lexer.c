@@ -93,7 +93,7 @@ UInt32 GutLexerNext (GutLexerState * lexer)
     return lexer->token.type;
 }
 
-// TODO (Emil): This feels like a dirty hack.
+
 UInt32 GutLexerPeek (GutLexerState * lexer)
 {
     GutToken token = lexer->token;
@@ -111,7 +111,6 @@ UInt32 GutLexerPeek (GutLexerState * lexer)
 #define Next(lexer) (lexer)->position++;
 #define NewLine(lexer) (lexer)->linenumber++; (lexer)->colnumber = 0
 
-
 #define IsDigit(c) ('0' <= (c) && (c) <= '9')
 #define IsCharacter(c) (((c) >= 'a' && (c) <= 'z') || ((c) >= 'A' && (c) <= 'Z'))
 
@@ -123,7 +122,7 @@ UInt32 GutLexerPeek (GutLexerState * lexer)
 
 internal Bool32 CompareKeyword (char * start, char * end, const char * keyword)
 {
-    UInt32 length = (end - start);
+    Size length = (end - start);
 
     if (strlen(keyword) != length) { return 0; }
 
@@ -171,7 +170,10 @@ internal void lexIdentifier (GutLexerState * lexer)
     checkIfKeyword(lexer, start, end);
 }
 
-internal int base = 10;
+
+#define StringToInteger(start, out_parse_end) strtol(start, &(out_parse_end), 10);
+#define StringToDouble(start, out_parse_end) strtod(start, &(out_parse_end))
+
 
 internal void lexNumber (GutLexerState * lexer)
 {
@@ -202,12 +204,12 @@ internal void lexNumber (GutLexerState * lexer)
 
 
         // SaveInteger(lexer->token, strtol(start &parse_end, base));
-        lexer->token.semantics.integer = strtol(start, &parse_end, base);
+        lexer->token.semantics.integer = StringToInteger(start, parse_end);
     }
     else
     {
         char * parse_end;
-        lexer->token.semantics.real = strtod(start, &parse_end);
+        lexer->token.semantics.real = StringToDouble(start, parse_end);
     }
 }
 
@@ -330,6 +332,7 @@ internal void lex (GutLexerState * lexer)
                 {
                     Next(lexer);
                 }
+
                 lexer->linenumber++;
                 lexer->colnumber = 0;
             }
@@ -339,6 +342,7 @@ internal void lex (GutLexerState * lexer)
                 {
                     Next(lexer);
                 }
+
                 lexer->linenumber++;
                 lexer->colnumber = 0;
             }

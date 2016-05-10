@@ -15,12 +15,17 @@ struct GutturalFunction
 {
     GutFunction * parent;
     GutTable * variables;
-    GutArray * code;
+    Instruction * code;
 };
 
 
 GutFunction * GutFunctionNew (void);
 void GutFunctionDelete (GutFunction * function);
+
+void GutFunctionSetVariable(GutFunction * function, GutTValue * identifier, GutTValue * value);
+void GutFunctionDeleteVariable(GutFunction * function, GutTValue * identifier);
+
+void GutFunctionSetCode(GutFunction * function);
 
 
 #endif

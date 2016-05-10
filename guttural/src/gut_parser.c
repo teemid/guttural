@@ -3,6 +3,7 @@
 #include "guttural.h"
 #include "gut_common.h"
 #include "gut_lexer.h"
+#include "gut_opcodes.h"
 #include "gut_parser.h"
 
 
@@ -26,50 +27,11 @@ void GutParse (GutState * state)
 #define IsType(token, token_type) ((token).type == (token_type))
 
 #define IsOperator(type) ( \
-    ((type) == TOKEN_PLUS) || ((type) == TOKEN_MINUS) || \
-    ((type) == TOKEN_MUL) || ((type) == TOKEN_DIV))
+            ((type) == TOKEN_PLUS) || ((type) == TOKEN_MINUS) || \
+            ((type) == TOKEN_MUL)  || ((type) == TOKEN_DIV) \
+        )
 
-
-
-internal void ParseDeclaration (GutState * state)
-{
-
-    Expect(Peek(state), TOKEN_IDENTIFIER);
-}
-
-
-/*
-internal void ParseStatement (GutState * state)
-{
-
-}
-
-
-internal void ParseAssignment (GutState * state)
-{
-
-}
-
-internal void ParseIfStatement (GutState * state)
-{
-
-}
-
-
-internal void ParseCall (GutState * state)
-{
-
-}
-
-internal void ParseOperator (GutState * state)
-{
-
-}
-
-internal void ParseFunctionDeclaration (GutState * state)
-{
-
-}
+#define GenerateCode(state) (state)->function->code
 
 
 static Int32 operator_precedence[] = {
@@ -82,6 +44,48 @@ static Int32 operator_precedence[] = {
 
 
 #define Precedence(operator) operator_precedence[(operator) - LAST_RESERVED]
+
+
+internal void ParseExpression (GutState * state)
+{
+    IsOperator(Next(state));
+}
+
+
+internal void ParseAssignment (GutState * state)
+{
+    Expect(Next(state), TOKEN_EQ);
+
+    ParseExpression(state);
+}
+
+
+internal void ParseLetStatement (GutState * state)
+{
+    Expect(Next(state), TOKEN_IDENTIFIER);
+    // TODO (Emil): Add identifier to string table?
+
+    if (Peek(state) == TOKEN_EQ)
+    {
+        Expect(Next(state), TOKEN_EQ);
+
+        ParseExpression(state);
+    }
+}
+
+
+/*
+
+internal void ParseStatement (GutState * state) { }
+
+internal void ParseIfStatement (GutState * state) { }
+
+internal void ParseCall (GutState * state) { }
+
+internal void ParseOperator (GutState * state) { }
+
+internal void ParseFunctionDeclaration (GutState * state) { }
+
 */
 
 
@@ -105,7 +109,7 @@ internal void Parse (GutState * state)
             } break;
             case TOKEN_LET:
             {
-                ParseDeclaration(state);
+                ParseLetStatement(state);
             } break;
             case TOKEN_EOF:
             {

@@ -3,7 +3,6 @@
 #include "gut_object.h"
 #include "gut_hashtable.h"
 #include "gut_memory.h"
-#include "gut_types.h"
 
 
 #define INVALID_HASH 0

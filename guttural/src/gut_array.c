@@ -6,6 +6,9 @@
 #define ARRAY_GROWTH_RATE 2
 
 
+#define GrowArray(array) GutArrayResize((array), (array)->capacity * ARRAY_GROWTH_RATE)
+
+
 GutArray * GutArrayNew (size_t capacity)
 {
     capacity = (capacity > 0) ? capacity : ARRAY_INITIAL_CAPACITY;
@@ -24,9 +27,6 @@ void GutArrayResize (GutArray * array, size_t capacity)
     array->elements = Reallocate(GutTValue *, array->elements, capacity * sizeof(GutTValue));
     array->capacity = capacity;
 }
-
-
-#define GrowArray(array) GutArrayResize((array), (array)->capacity * ARRAY_GROWTH_RATE);
 
 
 void GutArrayDelete (GutArray * array)
@@ -59,6 +59,7 @@ GutTValue * GutArrayGet (GutArray * array, UInt64 index)
 {
     return &array->elements[index];
 }
+
 
 void GutArraySet (GutArray * array, UInt64 index, GutTValue * value)
 {

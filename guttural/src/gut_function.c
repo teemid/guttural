@@ -8,7 +8,7 @@ GutFunction * GutFunctionNew (void)
 {
     GutFunction * function = Allocate(GutFunction *, sizeof(GutFunction));
     function->variables = GutTableNew(0);
-    function->code = GutArrayNew(0);
+    function->code = AllocateArray(Instruction *, 20);
 
     return function;
 }
@@ -17,6 +17,6 @@ GutFunction * GutFunctionNew (void)
 void GutFunctionDelete (GutFunction * function)
 {
     GutTableDelete(function->variables);
-    GutArrayDelete(function->code);
+    Free(function->code);
     Free(function);
 }
