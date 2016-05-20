@@ -11,6 +11,8 @@ internal char * read_source_file (char * filename)
     FILE * file;
     file = fopen(filename, "rb");
 
+    Assert(file, "Could not find file.");
+
     fseek(file, 0, SEEK_END);
     size_t size = ftell(file);
     rewind(file);
