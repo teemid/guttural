@@ -18,7 +18,7 @@
 
 #define GROWTH_FACTOR 2
 
-#define AllocateArray(type, bytes) (type)malloc(bytes)
+#define Buffer(type, count) (type *)malloc(sizeof(type) * (count))
 #define Grow(type, array, bytes) (type)realloc(array, bytes * GROWTH_FACTOR)
 
 
