@@ -15,7 +15,7 @@ internal GutGlobalState * NewGlobalState (void)
 {
     GutGlobalState * gState = Allocate(GutGlobalState *, sizeof(GutGlobalState));
     gState->variables = GutTableNew(0);
-    gState->stringTable = GutTableNew(0);
+    gState->strings = GutTableNew(0);
 
     return gState;
 }
