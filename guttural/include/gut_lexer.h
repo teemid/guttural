@@ -2,6 +2,7 @@
 #define GUTTURAL_LEXER_H
 
 
+#include "gut_object.h"
 #include "gut_types.h"
 
 
@@ -21,7 +22,7 @@ enum GutturalReserved
 };
 
 
-enum GutturalTokenType {
+typedef enum GutturalTokenType {
     TOKEN_PLUS = LAST_RESERVED,
     TOKEN_MINUS,
     TOKEN_MUL,
@@ -40,21 +41,18 @@ enum GutturalTokenType {
     TOKEN_PERIOD,
     TOKEN_COMMA,
     TOKEN_EOF
-};
+} GutTokenType;
 
 
 extern const char * const guttural_tokens[];
 
 
-typedef union GutturalSemanticInformation {
-    Int64 integer;
-    Real64 real;
-} GutSemInfo;
-
-
 typedef struct GutturalToken {
-    UInt32 type;
-    GutSemInfo semantics;
+    GutTokenType type;
+    GutValue value;
+    const char * start;
+    UInt32 linenumber;
+    Size length;
 } GutToken;
 
 

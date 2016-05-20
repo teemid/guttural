@@ -55,8 +55,29 @@ const char * const guttural_keywords[] = {
 
 #define KeywordCount (sizeof(guttural_keywords) / sizeof(char *))
 
-#define SetTokenType(lexer, gut_type) (lexer)->token.type = (gut_type)
-#define SaveInteger(token, i) (token).semantics.i = (i)
+// typedef struct GutturalToken {
+//     GutTokenType type;
+//     const char * start;
+//     UInt32 linenumber;
+//     Size length;
+//     GutValue value;
+// } GutToken;
+
+
+#define SetToken(lexer, token_type, start_ptr, line, len) \
+    { \
+        GutToken * t = &(lexer)->token; \
+        t->type = (token_type); \
+        t->start = (start_ptr); \
+        t->linenumber = (line); \
+        t->length = (len); \
+    }
+
+#define SetTokenType(lexer, token_type) (lexer)->token.type = (token_type)
+
+#define SetInteger(lexer, number) (lexer)->token.value.integer = (number)
+#define SetDouble(lexer, number) (lexer)->token.value.real = (number)
+
 #define SetLookahead(lexer, gut_type) (lexer)->lookahead.type = (gut_type)
 
 
@@ -135,22 +156,10 @@ internal Bool32 CompareKeyword (char * start, char * end, const char * keyword)
 }
 
 
-internal void checkIfKeyword (GutLexerState * lexer, char * start, char * end)
-{
-    for (UInt32 i = 0; i < KeywordCount; i++)
-    {
-        if (CompareKeyword(start, end, guttural_keywords[i]))
-        {
-            SetTokenType(lexer, i);
-            return;
-        }
-    }
-}
-
-
 internal void lexIdentifier (GutLexerState * lexer)
 {
     char * start = &Curr(lexer);
+    Int32 linenumber = lexer->linenumber;
 
     char c = Curr(lexer);
     if (!IsValidIdentifierStart(c))
@@ -165,9 +174,7 @@ internal void lexIdentifier (GutLexerState * lexer)
 
     char * end = &Curr(lexer);
 
-    SetTokenType(lexer, TOKEN_IDENTIFIER);
-
-    checkIfKeyword(lexer, start, end);
+    SetToken(lexer, TOKEN_IDENTIFIER, start, linenumber, end - start);
 }
 
 
@@ -178,13 +185,13 @@ internal void lexIdentifier (GutLexerState * lexer)
 internal void lexNumber (GutLexerState * lexer)
 {
     char * start = &Curr(lexer);
+    char * parse_end;
+    GutTokenType type = TOKEN_INTEGER;
 
     while (IsDigit(Curr(lexer)))
     {
         Next(lexer);
     }
-
-    SetTokenType(lexer, TOKEN_INTEGER);
 
     if (Curr(lexer) == '.')
     {
@@ -195,22 +202,23 @@ internal void lexNumber (GutLexerState * lexer)
             Next(lexer);
         }
 
-        SetTokenType(lexer, TOKEN_DOUBLE);
+        type = TOKEN_DOUBLE;
     }
 
-    if (lexer->token.type == TOKEN_INTEGER)
+    if (type == TOKEN_INTEGER)
     {
-        char * parse_end;
+        Int64 i = StringToInteger(start, parse_end);
 
-
-        // SaveInteger(lexer->token, strtol(start &parse_end, base));
-        lexer->token.semantics.integer = StringToInteger(start, parse_end);
+        SetInteger(lexer, i);
     }
     else
     {
-        char * parse_end;
-        lexer->token.semantics.real = StringToDouble(start, parse_end);
+        Real64 r = StringToDouble(start, parse_end);
+
+        SetDouble(lexer, r);
     }
+
+    SetToken(lexer, type, start, lexer->linenumber, parse_end - start);
 }
 
 
@@ -244,15 +252,18 @@ internal void lex (GutLexerState * lexer)
             } return;
             case '\'': case '"':
             {
-                char delimiter = c;
+                char * delimiter = &c;
+                UInt32 linenumber = lexer->linenumber;
                 Next(lexer);
 
-                while (Curr(lexer) != delimiter)
+                while (Curr(lexer) != *delimiter)
                 {
                     Next(lexer);
                 }
 
-                SetTokenType(lexer, TOKEN_STRING);
+                char * end = lexer->input + lexer->position;
+
+                SetToken(lexer, TOKEN_STRING, delimiter + 1, linenumber, end - delimiter);
                 Next(lexer);
             } return;
             case '+':
