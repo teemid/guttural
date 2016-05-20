@@ -15,6 +15,7 @@ struct GutturalFunction
 {
     GutFunction * parent;
     GutTable * variables;
+    GutArray * constants;
     Instruction * code;
 };
 

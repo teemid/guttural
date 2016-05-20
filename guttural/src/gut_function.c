@@ -8,7 +8,8 @@ GutFunction * GutFunctionNew (void)
 {
     GutFunction * function = Allocate(GutFunction *, sizeof(GutFunction));
     function->variables = GutTableNew(0);
-    function->code = AllocateArray(Instruction *, 20);
+    function->constants = GutArrayNew(0);
+    function->code = Buffer(Instruction, 20);
 
     return function;
 }
