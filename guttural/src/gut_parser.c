@@ -7,18 +7,69 @@
 #include "gut_parser.h"
 
 
-internal void Parse (GutState * state);
+internal void Expression (GutState * state);
 
 
 void GutParse (GutState * state)
 {
-    Parse(state);
+    Expression(state);
 }
 
 
+internal void UnaryOperator   (GutState * state);
+internal void Literal         (GutState * state);
+internal void InfixOperator   (GutState * state);
+internal void ParsePrecedence (GutState * state, Precedence precedence);
+
+
+#define UNUSED                           { NULL,          NULL,          PRECEDENCE_NONE,  NULL }
+#define PREFIX(function_ptr)             { function_ptr,  NULL,          PRECEDENCE_NONE,  NULL }
+#define INFIX(precedence, function_ptr)  { NULL,          function_ptr,  precedence,       NULL }
+#define PREFIX_OPERATOR(name)            { UnaryOperator, NULL,          PRECEDENCE_NONE,  name }
+#define INFIX_OPERATOR(name, precedence) { NULL,          InfixOperator, precedence,       name }
+#define OPERATOR(name)                   { UnaryOperator, InfixOperator, PRECEDENCE_TERM,  name }
+
+
+GrammarRule rules[] = {
+    /* TOKEN_ELSE           */ UNUSED,
+    /* TOKEN_ELSEIF         */ UNUSED,
+    /* TOKEN_END            */ UNUSED,
+    /* TOKEN_FALSE          */ UNUSED,
+    /* TOKEN_FUNCTION       */ UNUSED,
+    /* TOKEN_IF             */ UNUSED,
+    /* TOKEN_LET            */ UNUSED,
+    /* TOKEN_RETURN         */ UNUSED,
+    /* TOKEN_THEN           */ UNUSED,
+    /* TOKEN_TRUE           */ UNUSED,
+    /* TOKEN_PLUS           */ INFIX_OPERATOR("+", PRECEDENCE_TERM),
+    /* TOKEN_MINUS          */ OPERATOR("-"),
+    /* TOKEN_MUL            */ INFIX_OPERATOR("*", PRECEDENCE_FACTOR),
+    /* TOKEN_DIV            */ INFIX_OPERATOR("/", PRECEDENCE_FACTOR),
+    /* TOKEN_EQ             */ INFIX_OPERATOR("=", PRECEDENCE_ASSIGNMENT),
+    /* TOKEN_IDENTIFIER     */ UNUSED,
+    /* TOKEN_INTEGER        */ PREFIX(Literal),
+    /* TOKEN_DOUBLE         */ PREFIX(Literal),
+    /* TOKEN_STRING         */ PREFIX(Literal),
+    /* TOKEN_PAREN_OPEN     */ UNUSED,
+    /* TOKEN_PAREN_CLOSE    */ UNUSED,
+    /* TOKEN_SQUARE_OPEN    */ UNUSED,
+    /* TOKEN_SQUARE_CLOSE   */ UNUSED,
+    /* TOKEN_CURLY_OPEN     */ UNUSED,
+    /* TOKEN_CURLY_CLOSE    */ UNUSED,
+    /* TOKEN_PERIOD         */ UNUSED,
+    /* TOKEN_COMMA          */ UNUSED,
+    /* TOKEN_EOF            */ UNUSED,
+};
+
+
+#define PrintToken(token_type) printf("%s\n", guttural_tokens[(token_type)])
+
+#define GetRule(token_type) &rules[(token_type)]
+#define Prefix(token_type)  rules[(token_type)].prefix
+#define Infix(token_type)   rules[(token_type)].infix
+
 #define Current(state)   (state)->lexer->token.type
 #define Lookahead(state) (state)->lexer->lookahead.type
-#define Semantics(state)   (state)->lexer->token.semantics
 
 #define Next(state) GutLexerNext((state)->lexer)
 #define Peek(state) GutLexerPeek((state)->lexer)
@@ -26,99 +77,53 @@ void GutParse (GutState * state)
 #define Expect(token, token_type) Assert((token) == (token_type))
 #define IsType(token, token_type) ((token).type == (token_type))
 
-#define IsOperator(type) ( \
-            ((type) == TOKEN_PLUS) || ((type) == TOKEN_MINUS) || \
-            ((type) == TOKEN_MUL)  || ((type) == TOKEN_DIV) \
-        )
 
-#define GenerateCode(state) (state)->function->code
+#define SetLiteral(state)
 
 
-static Int32 operator_precedence[] = {
-    0, // TOKEN_PLUS
-    0, // TOKEN_MINUS
-    1, // TOKEN_MUL
-    1, // TOKEN_DIV
-    2, // TOKEN_EQ
-};
-
-
-#define Precedence(operator) operator_precedence[(operator) - LAST_RESERVED]
-
-
-internal void ParseExpression (GutState * state)
+internal void Literal (GutState * state)
 {
-    IsOperator(Next(state));
+    PrintToken(Current(state));
+    // Emit constant value and so on.
 }
 
 
-internal void ParseAssignment (GutState * state)
+internal void UnaryOperator (GutState * state)
 {
-    Expect(Next(state), TOKEN_EQ);
-
-    ParseExpression(state);
+    PrintToken(Current(state));
 }
 
 
-internal void ParseLetStatement (GutState * state)
+internal void InfixOperator (GutState * state)
 {
-    Expect(Next(state), TOKEN_IDENTIFIER);
-    // TODO (Emil): Add identifier to string table?
+    PrintToken(Current(state));
+    GrammarRule * rule = GetRule(Current(state));
 
-    if (Peek(state) == TOKEN_EQ)
-    {
-        Expect(Next(state), TOKEN_EQ);
-
-        ParseExpression(state);
-    }
+    ParsePrecedence(state, rule->precedence);
 }
 
 
-/*
-
-internal void ParseStatement (GutState * state) { }
-
-internal void ParseIfStatement (GutState * state) { }
-
-internal void ParseCall (GutState * state) { }
-
-internal void ParseOperator (GutState * state) { }
-
-internal void ParseFunctionDeclaration (GutState * state) { }
-
-*/
-
-
-internal void Parse (GutState * state)
+internal void Expression (GutState * state)
 {
-    while (1)
-    {
-        UInt32 type = Next(state);
+    ParsePrecedence(state, PRECEDENCE_LOWEST);
+}
 
-        switch (type)
-        {
-            case TOKEN_INTEGER:
-            case TOKEN_DOUBLE:
-            {
-                printf("%s: %lld \n", guttural_tokens[type], Semantics(state).integer);
 
-                if (IsOperator(Peek(state)))
-                {
-                    GutPushInteger(state, Semantics(state).integer);
-                }
-            } break;
-            case TOKEN_LET:
-            {
-                ParseLetStatement(state);
-            } break;
-            case TOKEN_EOF:
-            {
-                return;
-            } break;
-            default:
-            {
-                printf("%s\n", guttural_tokens[type]);
-            } break;
-        }
+internal void ParsePrecedence (GutState * state, Precedence precedence)
+{
+    GrammarRule * left = GetRule(Next(state));
+
+    Assert(left->prefix, "Expected an expression.");
+
+    left->prefix(state);
+
+    GrammarRule * operator = GetRule(Next(state));
+
+    while (precedence < operator->precedence) {
+        Assert(operator->infix, "Expected an operator");
+
+        operator->infix(state);
+
+        operator = GetRule(Next(state));
     }
 }
