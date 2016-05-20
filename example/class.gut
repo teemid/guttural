@@ -1,0 +1,14 @@
+class Greeter(Object)
+    let name
+
+    function constructor (name)
+        self.name = name
+    end
+
+    function greet ()
+        print('Hello, {name}'.format(name=name))
+    end
+end
+
+greeter = Greeter('Emil')
+greeter.greet()
