@@ -24,17 +24,18 @@ typedef enum GutturalType
 extern char const * const guttural_types[];
 
 
-typedef struct GutturalString {
+typedef struct GutturalString
+{
     char * c_str;
-    UInt64 length;
+    size_t length;
     UInt32 hash;
 } GutString;
 
 
 typedef union GutturalValue
 {
-    Int64 i;
-    Real64 r;
+    Int64 integer;
+    Real64 real;
     GutString * string;
     GutArray * array;
     GutTable * table;
@@ -47,6 +48,7 @@ typedef struct GutturalTaggedValue
     GutType type;
 } GutTValue;
 
+
 typedef GutTValue * StackPtr;
 
 
@@ -55,8 +57,8 @@ extern GutTValue nil;
 
 #define Type(tagged)    tagged->type
 
-#define Integer(tagged) tagged->value.i
-#define Double(tagged)  tagged->value.r
+#define Integer(tagged) tagged->value.integer
+#define Double(tagged)  tagged->value.real
 #define String(tagged)  tagged->value.string
 #define Array(tagged)   tagged->value.array
 #define Table(tagged)   tagged->value.table
