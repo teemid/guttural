@@ -60,9 +60,9 @@ int main (int argc, char ** argv)
 
     GutTableResize(table, 20);
 
-    GutTableRemove(table, NewString("c"));
+    GutTableRemoveHash(table, NewString("c"));
 
-    GutTValue * value = GutTableGet(table, NewString("c"));
+    GutTValue * value = GutTableGetHash(table, NewString("c"));
 
     printf("%s: %f\n", guttural_types[Type(value)], (double)Double(value));
 
