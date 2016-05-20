@@ -8,10 +8,10 @@
 #define internal static
 #define persist static
 
-#define Assert(statement) \
+#define Assert(statement, message) \
             if (!(statement)) \
             { \
-                printf("%s (%s: %d)\n", #statement, __FILE__, __LINE__); \
+                printf("%s (%s: %d)\n %s\n", #statement, __FILE__, __LINE__, message); \
                 abort(); \
             } \
             else { }
