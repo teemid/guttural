@@ -5,6 +5,8 @@
 #include "gut_common.h"
 #include "gut_lexer.h"
 #include "gut_object.h"
+#include "gut_string.h"
+#include "gut_state.h"
 
 
 const char * const guttural_tokens[] = {
@@ -75,9 +77,12 @@ const Keyword guttural_keywords[] = {
 internal void lex (GutLexerState * lexer);
 
 
-void GutLexerInit (GutLexerState * lexer)
+void GutLexerInit (GutState * state)
 {
+    GutLexerState * lexer = state->lexer;
     static int v;
+
+    lexer->state = state;
 
     lexer->position = 0;
     lexer->colnumber = 0;
@@ -131,6 +136,8 @@ UInt32 GutLexerPeek (GutLexerState * lexer)
 
 #define SetErrorMessage(message, line, col)
 
+#define HashString(state, gut_string) (state)->global_state->string_table->hash(gut_string)
+
 
 internal Bool32 CompareKeyword (char * start, char * end, const char * keyword)
 {
@@ -164,8 +171,16 @@ internal void lexIdentifier (GutLexerState * lexer)
     }
 
     char * end = &Curr(lexer);
+    Size length = end - start;
 
-    SetToken(lexer, TOKEN_IDENTIFIER, start, linenumber, end - start);
+    GutTValue * string = GutStringNew(start, length);
+
+    UInt32 hash = HashString(lexer->state, string);
+
+    // TODO (Emil): Check if the string exists, and if so point to it.
+    hash;
+
+    SetToken(lexer, TOKEN_IDENTIFIER, start, linenumber, length);
 }
 
 

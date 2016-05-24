@@ -13,9 +13,15 @@ typedef UByte Instruction;
 
 struct GutturalFunction
 {
+    // The function this function is declared in.
     GutFunction * parent;
+    // A list of functions declared in this function.
+    GutTable * functions;
+    // A table with all the names declared in this scope.
     GutTable * variables;
+    // A list of all the constants declared in this scope.
     GutArray * constants;
+    // The byte code for this function.
     Instruction * code;
 };
 

@@ -41,6 +41,17 @@ internal GutTableNode * AllocateNodes (size_t count)
 }
 
 
+internal void CheckCapacity (GutTable * table)
+{
+    Real64 usage = table->count / (Real64)table->capacity;
+
+    if (usage > 0.7)
+    {
+        GutTableResize(table, table->capacity * 2);
+    }
+}
+
+
 GutTable * GutTableNew (size_t capacity)
 {
     capacity = (capacity > 0) ? capacity : INITIAL_TABLE_SIZE;
@@ -106,11 +117,13 @@ void GutTableAddHash (GutTable * table, GutTValue * key, UInt32 hash, GutTValue 
     UInt32 index = hash % table->capacity;
     GutTableNode * node = &table->nodes[index];
 
-    UInt32 i = 0;
+    UInt32 i = 1;
     while (node->hash != INVALID_HASH && node->hash != hash)
     {
         index = (hash + i * i) % table->capacity;
         node = &table->nodes[index];
+
+        i += 1;
     }
 
     // NOTE (Emil): Don't count replacing a node.
@@ -119,6 +132,8 @@ void GutTableAddHash (GutTable * table, GutTValue * key, UInt32 hash, GutTValue 
     node->hash = hash;
     node->key = *key;
     node->value = *value;
+
+    CheckCapacity(table);
 }
 
 

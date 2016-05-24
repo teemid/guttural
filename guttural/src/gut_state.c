@@ -60,7 +60,7 @@ GutState * GutNewState (void)
     state->function = Allocate(GutFunction *, sizeof(GutFunction));
 
     state->lexer = Allocate(GutLexerState *, sizeof(GutLexerState));
-    GutLexerInit(state->lexer);
+    GutLexerInit(state);
 
     state->stack_size = INITIAL_STACK_SIZE;
     state->stack = Allocate(StackPtr, INITIAL_STACK_SIZE);

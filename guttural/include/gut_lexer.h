@@ -4,6 +4,7 @@
 
 #include "gut_object.h"
 #include "gut_types.h"
+#include "guttural.h"
 
 
 enum GutturalReserved
@@ -74,12 +75,14 @@ typedef struct GutturalLexerState
     GutToken token;
     GutToken lookahead;
 
+    GutState * state;
+
     void * temp;
     char * input;
 } GutLexerState;
 
 
-void   GutLexerInit (GutLexerState * lexer);
+void   GutLexerInit (GutState * state);
 UInt32 GutLexerNext (GutLexerState * lexer);
 UInt32 GutLexerPeek (GutLexerState * lexer);
 
