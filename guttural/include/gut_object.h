@@ -7,6 +7,7 @@
 
 typedef struct GutturalArray GutArray;
 typedef struct GutturalHashTable GutTable;
+typedef struct GutturalString GutString;
 
 // Size of enum is compiler dependent?
 // Size of members equals sizeof(int)
@@ -22,14 +23,6 @@ typedef enum GutturalType
 
 
 extern char const * const guttural_types[];
-
-
-typedef struct GutturalString
-{
-    char * c_str;
-    size_t length;
-    UInt32 hash;
-} GutString;
 
 
 typedef union GutturalValue

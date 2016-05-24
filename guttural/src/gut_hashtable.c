@@ -1,6 +1,7 @@
 #include "gut_conf.h"
 #include "gut_common.h"
 #include "gut_object.h"
+#include "gut_string.h"
 #include "gut_hashtable.h"
 #include "gut_memory.h"
 
@@ -8,22 +9,18 @@
 #define INVALID_HASH 0
 
 
-internal UInt32 djb2(char * key, UInt64 length)
+internal UInt32 djb2(GutTValue * key)
 {
+    GutString * string = String(key);
+
     UInt32 hash = 5381;
 
-    for (UInt64 i = 0; i < length; i++)
+    for (UInt64 i = 0; i < string->length; i++)
     {
-        hash = ((hash << 5) + hash) + key[i]; /* hash * 33 + c */
+        hash = ((hash << 5) + hash) + string->c_str[i]; /* hash * 33 + c */
     }
 
     return hash;
-}
-
-
-internal UInt32 Hash(GutTValue * tagged)
-{
-    return djb2(String(tagged)->c_str, String(tagged)->length);
 }
 
 
@@ -52,8 +49,15 @@ GutTable * GutTableNew (size_t capacity)
     table->nodes = AllocateNodes(capacity);
     table->capacity = capacity;
     table->count = 0;
+    table->hash = djb2;
 
     return table;
+}
+
+
+void GutTableSetHashFunction (GutTable * table, HashFunction function_ptr)
+{
+    table->hash = function_ptr;
 }
 
 
@@ -91,7 +95,14 @@ void GutTableDelete (GutTable * table)
 
 void GutTableAdd (GutTable * table, GutTValue * key, GutTValue * value)
 {
-    UInt32 hash = Hash(key);
+    UInt32 hash = table->hash(key);
+
+    GutTableAddHash(table, key, hash, value);
+}
+
+
+void GutTableAddHash (GutTable * table, GutTValue * key, UInt32 hash, GutTValue * value)
+{
     UInt32 index = hash % table->capacity;
     GutTableNode * node = &table->nodes[index];
 
@@ -111,9 +122,25 @@ void GutTableAdd (GutTable * table, GutTValue * key, GutTValue * value)
 }
 
 
+Bool32 GutTableHasKey (GutTable * table, GutTValue * key)
+{
+    UInt32 hash = table->hash(key);
+
+    return GutTableHasKeyHash (table, hash);
+}
+
+
+Bool32 GutTableHasKeyHash (GutTable * table, UInt32 hash)
+{
+    UInt32 index = hash % table->capacity;
+
+    return table->nodes[index].hash == hash;
+}
+
+
 GutTValue * GutTableGetHash (GutTable * table, GutTValue * key)
 {
-    UInt32 hash = Hash(key);
+    UInt32 hash = table->hash(key);
 
     return GutTableGet(table, hash);
 }
@@ -121,7 +148,7 @@ GutTValue * GutTableGetHash (GutTable * table, GutTValue * key)
 
 GutTValue * GutTableRemoveHash (GutTable * table, GutTValue * key)
 {
-    UInt32 hash = Hash(key);
+    UInt32 hash = table->hash(key);
 
     return GutTableRemove(table, hash);
 }

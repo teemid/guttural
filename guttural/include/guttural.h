@@ -5,7 +5,6 @@
 #include "gut_object.h"
 
 
-struct GutturalState;
 typedef struct GutturalState GutState;
 
 typedef void (*GutCFunction) (GutState * state);

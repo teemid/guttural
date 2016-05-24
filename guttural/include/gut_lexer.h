@@ -46,6 +46,14 @@ typedef enum GutturalTokenType {
 
 extern const char * const guttural_tokens[];
 
+typedef struct
+{
+    char * name;
+    Size length;
+} Keyword;
+
+extern const Keyword guttural_keywords[];
+
 
 typedef struct GutturalToken {
     GutTokenType type;

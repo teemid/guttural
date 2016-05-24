@@ -1,35 +1,62 @@
-#include "guttural.h"
-#include "gut_conf.h"
 #include "gut_common.h"
+#include "gut_conf.h"
 #include "gut_lexer.h"
 #include "gut_memory.h"
 #include "gut_object.h"
 #include "gut_state.h"
+#include "gut_string.h"
+#include "guttural.h"
 
 
 // NOTE (Emil): This might not be the best way of doing this.
-static GutGlobalState * globalState;
+static GutGlobalState * global_state;
+
+
+internal GutTValue * NewValue (GutType type)
+{
+    GutTValue * tagged_value = Allocate(GutTValue *, sizeof(GutTValue));
+
+    tagged_value->type = type;
+
+    return tagged_value;
+}
+
+
+GutTValue * NewString (char * string, Size length)
+{
+    GutTValue * tagged_value = NewValue(TYPE_STRING);
+    tagged_value->value.string = Allocate(GutString *, sizeof(GutString));
+
+    String(tagged_value)->c_str = string;
+    String(tagged_value)->length = length;
+    String(tagged_value)->hash = 0;
+
+    global_state->string_table->hash(tagged_value);
+
+    return tagged_value;
+}
+
 
 
 internal GutGlobalState * NewGlobalState (void)
 {
-    GutGlobalState * gState = Allocate(GutGlobalState *, sizeof(GutGlobalState));
-    gState->variables = GutTableNew(0);
-    gState->strings = GutTableNew(0);
+    GutGlobalState * g_state = Allocate(GutGlobalState *, sizeof(GutGlobalState));
+    g_state->variables = GutTableNew(0);
+    g_state->string_table = GutTableNew(0);
 
-    return gState;
+    return g_state;
 }
 
 
 GutState * GutNewState (void)
 {
-    if (NULL == globalState)
+    if (NULL == global_state)
     {
-        globalState = NewGlobalState();
+        global_state = NewGlobalState();
     }
 
     GutState * state = Allocate(GutState *, sizeof(GutState));
-    state->globalState = globalState;
+    state->global_state = global_state;
     state->function = Allocate(GutFunction *, sizeof(GutFunction));
 
     state->lexer = Allocate(GutLexerState *, sizeof(GutLexerState));
@@ -42,6 +69,26 @@ GutState * GutNewState (void)
     state->frame_pointer = state->stack;
 
     return state;
+}
+
+
+#define GlobalStringTable(state) (state)->global_state->string_table;
+
+
+void GutAddString (GutState * state, char * string, UInt32 length)
+{
+    GutTable * string_table = GlobalStringTable(state);
+    GutTValue * tagged_string = NewString(string, length);
+
+    UInt32 hash = string_table->hash(tagged_string);
+
+    GutTValue * possible_existing_string = GutTableGet(string_table, hash);
+
+    if (Type(possible_existing_string) == TYPE_NIL)
+    {
+        String(tagged_string)->hash = hash;
+        GutTableAddHash(string_table, tagged_string, hash, tagged_string);
+    }
 }
 
 

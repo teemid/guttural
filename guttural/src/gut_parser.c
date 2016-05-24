@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdarg.h>
 
 #include "guttural.h"
 #include "gut_common.h"
@@ -7,18 +8,23 @@
 #include "gut_parser.h"
 
 
-internal void Expression (GutState * state);
+internal void Statements (GutState * state);
 
 
 void GutParse (GutState * state)
 {
-    Expression(state);
+    Statements(state);
 }
 
 
-internal void UnaryOperator   (GutState * state);
-internal void Literal         (GutState * state);
-internal void InfixOperator   (GutState * state);
+internal void Statement           (GutState * state);
+internal void LetStatement        (GutState * state);
+internal void Expression          (GutState * state);
+internal void UnaryOperator       (GutState * state);
+internal void Literal             (GutState * state);
+internal void InfixOperator       (GutState * state);
+
+
 internal void ParsePrecedence (GutState * state, Precedence precedence);
 
 
@@ -37,7 +43,7 @@ GrammarRule rules[] = {
     /* TOKEN_FALSE          */ UNUSED,
     /* TOKEN_FUNCTION       */ UNUSED,
     /* TOKEN_IF             */ UNUSED,
-    /* TOKEN_LET            */ UNUSED,
+    /* TOKEN_LET            */ PREFIX(LetStatement),
     /* TOKEN_RETURN         */ UNUSED,
     /* TOKEN_THEN           */ UNUSED,
     /* TOKEN_TRUE           */ UNUSED,
@@ -62,7 +68,7 @@ GrammarRule rules[] = {
 };
 
 
-#define PrintToken(token_type) printf("%s\n", guttural_tokens[(token_type)])
+#define PrintToken(state) printf("%s\n", guttural_tokens[Current(state)])
 
 #define GetRule(token_type) &rules[(token_type)]
 #define Prefix(token_type)  rules[(token_type)].prefix
@@ -81,22 +87,48 @@ GrammarRule rules[] = {
 #define SetLiteral(state)
 
 
+internal void Match (GutState * state, UInt32 token_type, char * message, ...)
+{
+    if (Current(state) != (Int32)token_type)
+    {
+        va_list arguments;
+
+        va_start(arguments, message);
+
+        vprintf(message, arguments);
+    }
+}
+
+
+internal void Statements(GutState * state)
+{
+    Next(state);
+
+    while (Current(state) != TOKEN_EOF)
+    {
+        PrintToken(state);
+
+        Next(state);
+    }
+}
+
+
 internal void Literal (GutState * state)
 {
-    PrintToken(Current(state));
+    PrintToken(state);
     // Emit constant value and so on.
 }
 
 
 internal void UnaryOperator (GutState * state)
 {
-    PrintToken(Current(state));
+    PrintToken(state);
 }
 
 
 internal void InfixOperator (GutState * state)
 {
-    PrintToken(Current(state));
+    PrintToken(state);
     GrammarRule * rule = GetRule(Current(state));
 
     ParsePrecedence(state, rule->precedence);
@@ -109,9 +141,38 @@ internal void Expression (GutState * state)
 }
 
 
+internal void AddLocalVariable (GutState * state)
+{
+    *state;
+}
+
+
+internal void LetStatement (GutState * state)
+{
+    PrintToken(state);
+    // Match(state, TOKEN_LET, "Expected at let statement");
+
+    Next(state);
+
+    Match(state, TOKEN_IDENTIFIER, "Expected identifier");
+
+    AddLocalVariable(state);
+}
+
+
+internal void Statement (GutState * state)
+{
+    GrammarRule * rule = GetRule(Current(state));
+
+    Assert(rule->prefix, "Expected statement");
+
+    rule->prefix(state);
+}
+
+
 internal void ParsePrecedence (GutState * state, Precedence precedence)
 {
-    GrammarRule * left = GetRule(Next(state));
+    GrammarRule * left = GetRule(Current(state));
 
     Assert(left->prefix, "Expected an expression.");
 

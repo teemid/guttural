@@ -11,13 +11,13 @@
 typedef struct GutturalGlobalState
 {
     GutTable * variables;
-    GutTable * strings;
+    GutTable * string_table;
 } GutGlobalState;
 
 
 typedef struct GutturalState
 {
-    GutGlobalState * globalState;
+    GutGlobalState * global_state;
     GutFunction * function;
 
     GutLexerState * lexer;
@@ -31,7 +31,15 @@ typedef struct GutturalState
 } GutState;
 
 
-#define Global(gut_state) (gut_state)->globalState
+#define Global(gut_state) (gut_state)->global_state
+
+
+GutTValue * NewString  (char * string, Size length);
+GutTValue * NewInteger (UInt64 i);
+GutTValue * NewDouble  (Real64 d);
+
+
+void GutAddString (GutState * state, char * string, UInt32 length);
 
 
 #endif

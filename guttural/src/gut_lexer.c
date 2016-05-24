@@ -39,30 +39,21 @@ const char * const guttural_tokens[] = {
 };
 
 
-const char * const guttural_keywords[] = {
-    "else",
-    "elseif",
-    "end",
-    "false",
-    "function",
-    "if",
-    "let",
-    "return",
-    "then",
-    "true"
+const Keyword guttural_keywords[] = {
+    { "else",     4 },
+    { "elseif",   6 },
+    { "end",      3 },
+    { "false",    5 },
+    { "function", 8 },
+    { "if",       2 },
+    { "var",      3 },
+    { "return",   6 },
+    { "then",     4 },
+    { "true",     4 },
 };
 
 
 #define KeywordCount (sizeof(guttural_keywords) / sizeof(char *))
-
-// typedef struct GutturalToken {
-//     GutTokenType type;
-//     const char * start;
-//     UInt32 linenumber;
-//     Size length;
-//     GutValue value;
-// } GutToken;
-
 
 #define SetToken(lexer, token_type, start_ptr, line, len) \
     { \
