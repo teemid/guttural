@@ -1,5 +1,5 @@
 class Greeter(Object)
-    let name
+    var name
 
     function constructor (name)
         self.name = name

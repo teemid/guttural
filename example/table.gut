@@ -1,4 +1,4 @@
-let h = {}
+var h = {}
 
 h['apples'] = 0
 h['oranges'] = 'Oranges'

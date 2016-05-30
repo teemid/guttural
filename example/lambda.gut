@@ -1,5 +1,5 @@
 function NewCounter ()
-    let i = 0
+    var i = 0
 
     return function ()
         i = i + 1

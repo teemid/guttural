@@ -7,7 +7,7 @@ function NewCounter ()
     end
 end
 
-let counter = NewCounter()
+var counter = NewCounter()
 
 print(counter())
 print(counter())
