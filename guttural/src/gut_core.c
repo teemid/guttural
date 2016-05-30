@@ -10,15 +10,18 @@
 void GutCoreInitialize (GutState * state)
 {
     GutTable * string_table = StringTable(state);
+    GutTValue counter = { { 0 }, TYPE_INTEGER };
 
     for (UInt32 i = 0; i < LAST_RESERVED; i++)
     {
+        Integer(&counter) = i;
+
         Keyword const * keyword = &guttural_keywords[i];
 
         GutTValue * gut_string = GutStringNew(keyword->name, keyword->length);
 
         UInt32 hash = string_table->hash(gut_string);
 
-        GutTableAddHash(string_table, gut_string, hash, gut_string);
+        GutTableHashAdd(string_table, hash, gut_string, &counter);
     }
 }

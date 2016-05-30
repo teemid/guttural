@@ -15,15 +15,15 @@ enum GutturalReserved
     TOKEN_FALSE,
     TOKEN_FUNCTION,
     TOKEN_IF,
-    TOKEN_LET,
     TOKEN_RETURN,
     TOKEN_THEN,
     TOKEN_TRUE,
+    TOKEN_VAR,
     LAST_RESERVED
 };
 
 
-typedef enum GutturalTokenType {
+enum GutturalTokenType {
     TOKEN_PLUS = LAST_RESERVED,
     TOKEN_MINUS,
     TOKEN_MUL,
@@ -42,23 +42,26 @@ typedef enum GutturalTokenType {
     TOKEN_PERIOD,
     TOKEN_COMMA,
     TOKEN_EOF
-} GutTokenType;
+};
 
 
 extern const char * const guttural_tokens[];
+
 
 typedef struct
 {
     char * name;
     Size length;
+    UInt32 hash;
 } Keyword;
+
 
 extern const Keyword guttural_keywords[];
 
 
 typedef struct GutturalToken {
-    GutTokenType type;
-    GutValue value;
+    UInt32 type;
+    GutTValue value;
     const char * start;
     UInt32 linenumber;
     Size length;

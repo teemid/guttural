@@ -15,6 +15,8 @@ typedef struct GutturalString
 
 
 GutTValue * GutStringNew     (char * string, Size length);
+void        GutStringDelete  (GutTValue * string);
+
 Size        GutStringLength  (GutTValue * string);
 Bool32      GutStringCompare (GutTValue * s1, GutTValue * s2, Size length);
 

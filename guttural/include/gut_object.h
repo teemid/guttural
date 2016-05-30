@@ -5,6 +5,7 @@
 #include "gut_types.h"
 
 
+// NOTE (Emil): Forward declare all the objects need for the value definiton.
 typedef struct GutturalArray GutArray;
 typedef struct GutturalHashTable GutTable;
 typedef struct GutturalString GutString;
@@ -19,6 +20,7 @@ typedef enum GutturalType
     TYPE_NIL,
     TYPE_STRING,
     TYPE_TABLE,
+    TYPE_KEYWORD,
 } GutType;
 
 
@@ -45,16 +47,23 @@ typedef struct GutturalTaggedValue
 typedef GutTValue * StackPtr;
 
 
-extern GutTValue nil;
+#define MakeNil(tagged)  Type(tagged) = TYPE_NIL
+
+#define Type(tagged)    (tagged)->type
+
+#define Array(tagged)   (tagged)->value.array
+#define Double(tagged)  (tagged)->value.real
+#define Integer(tagged) (tagged)->value.integer
+#define String(tagged)  (tagged)->value.string
+#define Table(tagged)   (tagged)->value.table
 
 
-#define Type(tagged)    tagged->type
-
-#define Integer(tagged) tagged->value.integer
-#define Double(tagged)  tagged->value.real
-#define String(tagged)  tagged->value.string
-#define Array(tagged)   tagged->value.array
-#define Table(tagged)   tagged->value.table
+#define IsArray(tagged)   Type(tagged) == TYPE_ARRAY
+#define IsDouble(tagged)  Type(tagged) == TYPE_DOUBLE
+#define IsInteger(tagged) Type(tagged) == TYPE_INTEGER
+#define IsString(tagged)  Type(tagged) == TYPE_STRING
+#define IsTable(tagged)   Type(tagged) == TYPE_TABLE
+#define IsNil(tagged)     Type(tagged) == TYPE_NIL
 
 
 #endif

@@ -4,9 +4,11 @@
 #include "gut_memory.h"
 
 
-GutFunction * GutFunctionNew (void)
+GutFunction * GutFunctionNew (GutFunction * parent)
 {
     GutFunction * function = Allocate(GutFunction *, sizeof(GutFunction));
+    function->parent = parent ? parent : NULL;
+    function->arity = 0;
     function->variables = GutTableNew(0);
     function->constants = GutArrayNew(0);
     function->code = Buffer(Instruction, 20);

@@ -31,17 +31,21 @@ void        GutTableResize          (GutTable * table, size_t new_capacity);
 void        GutTableDelete          (GutTable * table);
 void        GutTableSetHashFunction (GutTable * table, HashFunction function_ptr);
 
+
+Bool32      GutTableExists          (GutTable * table, GutTValue * key);
 void        GutTableAdd             (GutTable * table, GutTValue * key, GutTValue * value);
-void        GutTableAddHash         (GutTable * table, GutTValue * key, UInt32 hash, GutTValue * value);
+GutTValue * GutTableGet             (GutTable * table, GutTValue * key);
+GutTValue * GutTableRemove          (GutTable * table, GutTValue * key);
 
-Bool32      GutTableHasKey          (GutTable * table, GutTValue * key);
-Bool32      GutTableHasKeyHash      (GutTable * table, UInt32 hash);
 
-GutTValue * GutTableGet             (GutTable * table, UInt32 hash);
-GutTValue * GutTableRemove          (GutTable * table, UInt32 hash);
+Bool32      GutTableHashExists      (GutTable * table, UInt32 hash);
+void        GutTableHashAdd         (GutTable * table, UInt32 hash, GutTValue * key, GutTValue * value);
+GutTValue * GutTableHashGet         (GutTable * table, UInt32 hash);
+GutTValue * GutTableHashRemove      (GutTable * table, UInt32 hash);
 
-GutTValue * GutTableGetHash         (GutTable * table, GutTValue * key);
-GutTValue * GutTableRemoveHash      (GutTable * table, GutTValue * key);
+
+GutTableNode * GutTableGetPair      (GutTable * table, GutTValue * key);
+GutTableNode * GutTableHashGetPair  (GutTable * table, UInt32 hash);
 
 
 #endif

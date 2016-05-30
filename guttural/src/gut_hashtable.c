@@ -33,8 +33,8 @@ internal GutTableNode * AllocateNodes (size_t count)
     {
         node = &nodes[i];
         node->hash = INVALID_HASH;
-        node->key = nil;
-        node->value = nil;
+        MakeNil(&node->key);
+        MakeNil(&node->value);
     }
 
     return nodes;
@@ -108,11 +108,43 @@ void GutTableAdd (GutTable * table, GutTValue * key, GutTValue * value)
 {
     UInt32 hash = table->hash(key);
 
-    GutTableAddHash(table, key, hash, value);
+    GutTableHashAdd(table, hash, key, value);
 }
 
 
-void GutTableAddHash (GutTable * table, GutTValue * key, UInt32 hash, GutTValue * value)
+Bool32 GutTableExists (GutTable * table, GutTValue * key)
+{
+    UInt32 hash = table->hash(key);
+
+    return GutTableHashExists (table, hash);
+}
+
+
+Bool32 GutTableHashExists (GutTable * table, UInt32 hash)
+{
+    UInt32 index = hash % table->capacity;
+
+    return table->nodes[index].hash == hash;
+}
+
+
+GutTValue * GutTableGet (GutTable * table, GutTValue * key)
+{
+    UInt32 hash = table->hash(key);
+
+    return GutTableHashGet(table, hash);
+}
+
+
+GutTValue * GutTableRemove (GutTable * table, GutTValue * key)
+{
+    UInt32 hash = table->hash(key);
+
+    return GutTableHashRemove(table, hash);
+}
+
+
+void GutTableHashAdd (GutTable * table, UInt32 hash, GutTValue * key, GutTValue * value)
 {
     UInt32 index = hash % table->capacity;
     GutTableNode * node = &table->nodes[index];
@@ -137,39 +169,7 @@ void GutTableAddHash (GutTable * table, GutTValue * key, UInt32 hash, GutTValue 
 }
 
 
-Bool32 GutTableHasKey (GutTable * table, GutTValue * key)
-{
-    UInt32 hash = table->hash(key);
-
-    return GutTableHasKeyHash (table, hash);
-}
-
-
-Bool32 GutTableHasKeyHash (GutTable * table, UInt32 hash)
-{
-    UInt32 index = hash % table->capacity;
-
-    return table->nodes[index].hash == hash;
-}
-
-
-GutTValue * GutTableGetHash (GutTable * table, GutTValue * key)
-{
-    UInt32 hash = table->hash(key);
-
-    return GutTableGet(table, hash);
-}
-
-
-GutTValue * GutTableRemoveHash (GutTable * table, GutTValue * key)
-{
-    UInt32 hash = table->hash(key);
-
-    return GutTableRemove(table, hash);
-}
-
-
-GutTValue * GutTableGet (GutTable * table, UInt32 hash)
+GutTValue * GutTableHashGet (GutTable * table, UInt32 hash)
 {
     UInt32 index = hash % table->capacity;
 
@@ -180,13 +180,15 @@ GutTValue * GutTableGet (GutTable * table, UInt32 hash)
     {
         index = (hash + i * i) % table->capacity;
         node = &table->nodes[index];
+
+        i += 1;
     }
 
     return &node->value;
 }
 
 
-GutTValue * GutTableRemove (GutTable * table, UInt32 hash)
+GutTValue * GutTableHashRemove (GutTable * table, UInt32 hash)
 {
     UInt32 index = hash % table->capacity;
 
@@ -197,13 +199,41 @@ GutTValue * GutTableRemove (GutTable * table, UInt32 hash)
     {
         index = (hash + i * i) % table->capacity;
         node = &table->nodes[index];
+
+        i += 1;
     }
 
     table->count -= 1;
 
     node->hash = INVALID_HASH;
-    node->key = nil;
-    node->value = nil;
+    MakeNil(&node->key);
+    MakeNil(&node->value);
 
     return &node->value;
+}
+
+
+GutTableNode * GutTableGetPair (GutTable * table, GutTValue * key)
+{
+    UInt32 hash = table->hash(key);
+
+    return GutTableHashGetPair(table, hash);
+}
+
+GutTableNode * GutTableHashGetPair (GutTable * table, UInt32 hash)
+{
+    UInt32 index = hash % table->capacity;
+
+    GutTableNode * node = &table->nodes[index];
+
+    UInt32 i = 1;
+    while (node->hash != INVALID_HASH && node->hash != hash)
+    {
+        index = (hash + i * i) % table->capacity;
+        node = &table->nodes[index];
+
+        i += 1;
+    }
+
+    return node;
 }

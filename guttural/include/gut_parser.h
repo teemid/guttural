@@ -7,7 +7,7 @@
 
 typedef enum {
     PRECEDENCE_NONE,
-    PRECEDENCE_LOWEST,
+    PRECEDENCE_LOWEST,      // Sentinel
     PRECEDENCE_ASSIGNMENT,  // =
     PRECEDENCE_LOGICAL_OR,  // ||
     PRECEDENCE_LOGICAL_AND, // &&

@@ -16,10 +16,10 @@ const char * const guttural_tokens[] = {
     "TOKEN_FALSE",
     "TOKEN_FUNCTION",
     "TOKEN_IF",
-    "TOKEN_LET",
     "TOKEN_RETURN",
     "TOKEN_THEN",
     "TOKEN_TRUE",
+    "TOKEN_VAR",
     "TOKEN_PLUS",
     "TOKEN_MINUS",
     "TOKEN_MUL",
@@ -48,10 +48,10 @@ const Keyword guttural_keywords[] = {
     { "false",    5 },
     { "function", 8 },
     { "if",       2 },
-    { "var",      3 },
     { "return",   6 },
     { "then",     4 },
     { "true",     4 },
+    { "var",      3 },
 };
 
 
@@ -68,8 +68,8 @@ const Keyword guttural_keywords[] = {
 
 #define SetTokenType(lexer, token_type) (lexer)->token.type = (token_type)
 
-#define SetInteger(lexer, number) (lexer)->token.value.integer = (number)
-#define SetDouble(lexer, number) (lexer)->token.value.real = (number)
+#define SetInteger(lexer, number) (lexer)->token.value.value.integer = (number)
+#define SetDouble(lexer, number) (lexer)->token.value.value.real = (number)
 
 #define SetLookahead(lexer, gut_type) (lexer)->lookahead.type = (gut_type)
 
@@ -137,6 +137,7 @@ UInt32 GutLexerPeek (GutLexerState * lexer)
 #define SetErrorMessage(message, line, col)
 
 #define HashString(state, gut_string) (state)->global_state->string_table->hash(gut_string)
+#define GlobalStringTable(state) (state)->global_state->string_table
 
 
 internal Bool32 CompareKeyword (char * start, char * end, const char * keyword)
@@ -177,10 +178,14 @@ internal void lexIdentifier (GutLexerState * lexer)
 
     UInt32 hash = HashString(lexer->state, string);
 
-    // TODO (Emil): Check if the string exists, and if so point to it.
-    hash;
+    UInt32 token_type = TOKEN_IDENTIFIER;
+    GutTableNode * maybe = GutTableHashGetPair(GlobalStringTable(lexer->state), hash);
 
-    SetToken(lexer, TOKEN_IDENTIFIER, start, linenumber, length);
+    if (IsInteger(&maybe->value)) {
+        token_type = TOKEN_ELSE + (UInt32)Integer(&maybe->value);
+    }
+
+    SetToken(lexer, token_type, start, linenumber, length);
 }
 
 
@@ -192,7 +197,7 @@ internal void lexNumber (GutLexerState * lexer)
 {
     char * start = &Curr(lexer);
     char * parse_end;
-    GutTokenType type = TOKEN_INTEGER;
+    UInt32 token_type = TOKEN_INTEGER;
 
     while (IsDigit(Curr(lexer)))
     {
@@ -208,10 +213,10 @@ internal void lexNumber (GutLexerState * lexer)
             Next(lexer);
         }
 
-        type = TOKEN_DOUBLE;
+        token_type = TOKEN_DOUBLE;
     }
 
-    if (type == TOKEN_INTEGER)
+    if (token_type == TOKEN_INTEGER)
     {
         Int64 i = StringToInteger(start, parse_end);
 
@@ -224,7 +229,7 @@ internal void lexNumber (GutLexerState * lexer)
         SetDouble(lexer, r);
     }
 
-    SetToken(lexer, type, start, lexer->linenumber, parse_end - start);
+    SetToken(lexer, token_type, start, lexer->linenumber, parse_end - start);
 }
 
 

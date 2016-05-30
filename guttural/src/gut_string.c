@@ -35,6 +35,14 @@ GutTValue * GutStringNew (char * string, Size length)
 }
 
 
+void GutStringDelete (GutTValue * string)
+{
+    Free(CStr(string));
+    Free(String(string));
+    Free(string);
+}
+
+
 Size GutStringLength (GutTValue * string)
 {
     return Length(string);

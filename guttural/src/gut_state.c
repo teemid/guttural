@@ -57,7 +57,7 @@ GutState * GutNewState (void)
 
     GutState * state = Allocate(GutState *, sizeof(GutState));
     state->global_state = global_state;
-    state->function = Allocate(GutFunction *, sizeof(GutFunction));
+    state->function = GutFunctionNew(NULL);
 
     state->lexer = Allocate(GutLexerState *, sizeof(GutLexerState));
     GutLexerInit(state);
@@ -75,20 +75,27 @@ GutState * GutNewState (void)
 #define GlobalStringTable(state) (state)->global_state->string_table;
 
 
-void GutAddString (GutState * state, char * string, UInt32 length)
+GutTValue * GutAddString (GutState * state, char * string, UInt32 length)
 {
     GutTable * string_table = GlobalStringTable(state);
     GutTValue * tagged_string = NewString(string, length);
 
     UInt32 hash = string_table->hash(tagged_string);
 
-    GutTValue * possible_existing_string = GutTableGet(string_table, hash);
+    GutTValue * existing = GutTableHashGet(string_table, hash);
 
-    if (Type(possible_existing_string) == TYPE_NIL)
+    if (Type(existing) == TYPE_NIL)
     {
         String(tagged_string)->hash = hash;
-        GutTableAddHash(string_table, tagged_string, hash, tagged_string);
+        GutTableHashAdd(string_table, hash, tagged_string, tagged_string);
     }
+    else
+    {
+        GutStringDelete(tagged_string);
+        tagged_string = existing;
+    }
+
+    return tagged_string;
 }
 
 

@@ -39,7 +39,7 @@ GutTValue * NewInteger (UInt64 i);
 GutTValue * NewDouble  (Real64 d);
 
 
-void   GutAddString    (GutState * state, char * string, UInt32 length);
+GutTValue * GutAddString    (GutState * state, char * string, UInt32 length);
 
 
 #endif
