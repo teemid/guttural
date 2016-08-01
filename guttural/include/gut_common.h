@@ -8,6 +8,8 @@
 #define internal static
 #define persist static
 
+#define UNUSED(arg) (void)(arg)
+
 #define Assert(statement, message) \
             if (!(statement)) \
             { \
