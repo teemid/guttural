@@ -9,8 +9,8 @@ SET INCLUDE_DIR="%~dp0guttural\include\"
 IF NOT EXIST build mkdir build
 
 
-IF "%1" == "" GOTO end
 IF "%1" == "standalone" GOTO standalone
+IF "%1" == "test" GOTO vmtest
 IF "%1" == "msvc" GOTO msvc
 IF "%1" == "clang" GOTO clang
 
@@ -39,6 +39,25 @@ REM -ansi: Alias for -std=c89
     SET LINKER_FLAGS=/NOLOGO /DEBUG
 
     link %LINKER_FLAGS% /OUT:guttural.exe *.obj
+
+    POPD
+
+    GOTO end
+
+:vmtest
+    SET STANDALONE_FILE = %~dp0guttural\guttural.c
+    SET MACROS=/DGUTTURAL_DEBUG
+    SET COMPILER_FLAGS=/nologo /Od /W4 /wd4127 /wd4996 /Zi /Fobuild\ /Fdbuild\ /c /I "guttural\include"
+
+    FOR /r %%f IN ("guttural\src\*.c") DO cl %COMPILER_FLAGS% "%%f" %MACROS%
+
+    cl %COMPILER_FLAGS% guttural\test.c %MACROS%
+
+    PUSHD build
+
+    SET LINKER_FLAGS=/NOLOGO /DEBUG
+
+    link %LINKER_FLAGS% /OUT:test_guttural.exe *.obj
 
     POPD
 
