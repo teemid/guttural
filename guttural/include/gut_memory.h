@@ -25,9 +25,9 @@
 #else
 
 
-#define MALLOC(type, bytes)
-#define REALLOC(type, memory, bytes)
-#define CALLOC(type)
+#define Allocate(type, bytes)
+#define Reallocate(type, memory, bytes)
+#define Free(type)
 
 
 #endif

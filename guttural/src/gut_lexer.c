@@ -113,10 +113,13 @@ UInt32 GutLexerNext (GutLexerState * lexer)
 
 UInt32 GutLexerPeek (GutLexerState * lexer)
 {
-    GutToken token = lexer->token;
-    lex(lexer);
-    lexer->lookahead = lexer->token;
-    lexer->token = token;
+    if (lexer->lookahead.type == TOKEN_EOF)
+    {
+        GutToken token = lexer->token;
+        lex(lexer);
+        lexer->lookahead = lexer->token;
+        lexer->token = token;
+    }
 
     return lexer->lookahead.type;
 }

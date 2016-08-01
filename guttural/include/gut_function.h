@@ -9,32 +9,22 @@
 
 // NOTE (Emil): Forward declaration because GutFunction refers to itself.
 typedef struct GutturalFunction GutFunction;
-typedef UByte Instruction;
+typedef UInt32 Instruction;
+
 
 struct GutturalFunction
 {
-    // The function this function is declared in.
-    GutFunction * parent;
-    // The number of parameters for the function.
-    UInt8 arity;
-    // A list of functions declared in this function.
-    GutTable * functions;
-    // A table with all the names declared in this scope.
-    GutTable * variables;
-    // A list of all the constants declared in this scope.
-    GutArray * constants;
-    // The byte code for this function.
-    Instruction * code;
+    GutFunction * parent; // The function this function is declared in.
+    GutFunction * functions; // A list of functions declared inside this function.
+    UInt16 function_count; // The number of functions declared in the scope of this function.
+    UInt8 arity; // The number of parameters for the function.
+    GutArray * constants; // A list of all the constants declared in this scope.
+    Instruction * code; // The byte code for this function.
 };
 
 
 GutFunction * GutFunctionNew (GutFunction * parent);
 void GutFunctionDelete (GutFunction * function);
-
-void GutFunctionSetVariable(GutFunction * function, GutTValue * identifier, GutTValue * value);
-void GutFunctionDeleteVariable(GutFunction * function, GutTValue * identifier);
-
-void GutFunctionSetCode(GutFunction * function);
 
 
 #endif

@@ -9,27 +9,20 @@
 #include "guttural.h"
 
 
-internal void Statements (GutState * state);
-
-
-void GutParse (GutState * state)
-{
-    Statements(state);
-}
-
-
-internal void Expression          (GutState * state);
-internal void InfixOperator       (GutState * state);
-internal void Literal             (GutState * state);
-internal void Statement           (GutState * state);
-internal void UnaryOperator       (GutState * state);
-internal void VarStatement        (GutState * state);
-
-
+internal void Expression      (GutState * state);
+internal void InfixOperator   (GutState * state);
+internal void Literal         (GutState * state);
+internal void Identifier      (GutState * state);
+internal void Statement       (GutState * state);
+internal void UnaryOperator   (GutState * state);
+internal void VarStatement    (GutState * state);
+internal void Assignment      (GutState * state, UByte local_variable);
 internal void ParsePrecedence (GutState * state, Precedence precedence);
 
 
-#define UNUSED                           { NULL,          NULL,          PRECEDENCE_NONE,  NULL }
+internal void Match           (GutState * state, UInt32 token_type, char *, ...);
+
+#define NO_RULE                          { NULL,          NULL,          PRECEDENCE_NONE,  NULL }
 #define PREFIX(function_ptr)             { function_ptr,  NULL,          PRECEDENCE_NONE,  NULL }
 #define INFIX(precedence, function_ptr)  { NULL,          function_ptr,  precedence,       NULL }
 #define PREFIX_OPERATOR(name)            { UnaryOperator, NULL,          PRECEDENCE_NONE,  name }
@@ -38,34 +31,34 @@ internal void ParsePrecedence (GutState * state, Precedence precedence);
 
 
 GrammarRule rules[] = {
-    /* TOKEN_ELSE           */ UNUSED,
-    /* TOKEN_ELSEIF         */ UNUSED,
-    /* TOKEN_END            */ UNUSED,
-    /* TOKEN_FALSE          */ UNUSED,
-    /* TOKEN_FUNCTION       */ UNUSED,
-    /* TOKEN_IF             */ UNUSED,
-    /* TOKEN_RETURN         */ UNUSED,
-    /* TOKEN_THEN           */ UNUSED,
-    /* TOKEN_TRUE           */ UNUSED,
+    /* TOKEN_ELSE           */ NO_RULE,
+    /* TOKEN_ELSEIF         */ NO_RULE,
+    /* TOKEN_END            */ NO_RULE,
+    /* TOKEN_FALSE          */ NO_RULE,
+    /* TOKEN_FUNCTION       */ NO_RULE,
+    /* TOKEN_IF             */ NO_RULE,
+    /* TOKEN_RETURN         */ NO_RULE,
+    /* TOKEN_THEN           */ NO_RULE,
+    /* TOKEN_TRUE           */ NO_RULE,
     /* TOKEN_VAR            */ PREFIX(VarStatement),
     /* TOKEN_PLUS           */ INFIX_OPERATOR("+", PRECEDENCE_TERM),
     /* TOKEN_MINUS          */ OPERATOR("-"),
     /* TOKEN_MUL            */ INFIX_OPERATOR("*", PRECEDENCE_FACTOR),
     /* TOKEN_DIV            */ INFIX_OPERATOR("/", PRECEDENCE_FACTOR),
     /* TOKEN_EQ             */ INFIX_OPERATOR("=", PRECEDENCE_ASSIGNMENT),
-    /* TOKEN_IDENTIFIER     */ UNUSED,
+    /* TOKEN_IDENTIFIER     */ PREFIX(Identifier),
     /* TOKEN_INTEGER        */ PREFIX(Literal),
     /* TOKEN_DOUBLE         */ PREFIX(Literal),
     /* TOKEN_STRING         */ PREFIX(Literal),
-    /* TOKEN_PAREN_OPEN     */ UNUSED,
-    /* TOKEN_PAREN_CLOSE    */ UNUSED,
-    /* TOKEN_SQUARE_OPEN    */ UNUSED,
-    /* TOKEN_SQUARE_CLOSE   */ UNUSED,
-    /* TOKEN_CURLY_OPEN     */ UNUSED,
-    /* TOKEN_CURLY_CLOSE    */ UNUSED,
-    /* TOKEN_PERIOD         */ UNUSED,
-    /* TOKEN_COMMA          */ UNUSED,
-    /* TOKEN_EOF            */ UNUSED,
+    /* TOKEN_PAREN_OPEN     */ NO_RULE,
+    /* TOKEN_PAREN_CLOSE    */ NO_RULE,
+    /* TOKEN_SQUARE_OPEN    */ NO_RULE,
+    /* TOKEN_SQUARE_CLOSE   */ NO_RULE,
+    /* TOKEN_CURLY_OPEN     */ NO_RULE,
+    /* TOKEN_CURLY_CLOSE    */ NO_RULE,
+    /* TOKEN_PERIOD         */ NO_RULE,
+    /* TOKEN_COMMA          */ NO_RULE,
+    /* TOKEN_EOF            */ NO_RULE,
 };
 
 
@@ -75,18 +68,71 @@ GrammarRule rules[] = {
 #define Prefix(token_type)  rules[(token_type)].prefix
 #define Infix(token_type)   rules[(token_type)].infix
 
-#define Current(state)   (state)->lexer->token.type
-#define Lookahead(state) (state)->lexer->lookahead.type
+#define CurrentToken(state) (state)->lexer->token
+#define LookaheadToken(state) (state)->lexer->lookahead
+
+#define Current(state)   CurrentToken(state).type
+#define Lookahead(state) LookaheadToken(state).type
+
+#define Value(state) CurrentToken(state).value
 
 #define Next(state) GutLexerNext((state)->lexer)
 #define Peek(state) GutLexerPeek((state)->lexer)
 
-#define Expect(token, token_type) Assert((token) == (token_type))
-#define IsType(token, token_type) ((token).type == (token_type))
+#define Is(token, token_type) (token == (token_type))
 
 #define Function(state) (state)->function
 
-#define SetLiteral(state)
+#define Precedence(token) *GetRule(token).precedence
+
+#define NewInteger(variable_name, i) \
+    GutTValue variable_name = {}; \
+    Type(variable_name) = TYPE_INTEGER; \
+    Integer(variable_name) = (i);
+
+#define Emit(fn, op, n) n;
+
+
+void GutParse (GutState * state)
+{
+    while (Next(state) != TOKEN_EOF)
+    {
+        ParsePrecedence(state, PRECEDENCE_LOWEST);
+    }
+
+    Match(state, TOKEN_EOF, "Expected TOKEN_EOF\n");
+
+    PrintToken(state);
+}
+
+
+typedef struct {
+    GutTable symbols;
+} Function;
+
+
+typedef struct {
+    char * filename;
+    UInt32 linenumber;
+    GutTable * symbol;
+    GutFunction * function;
+} Prototype;
+
+
+typedef struct {
+    UInt32 start;
+    UInt32 end;
+} Jump;
+
+
+typedef struct {
+    // Current compiling function.
+    Prototype * function_prototype;
+    // Symbols defined in the current scope.
+    GutTable symbols;
+
+    GutState * state;
+} Parser;
 
 
 internal void Match (GutState * state, UInt32 token_type, char * message, ...)
@@ -98,17 +144,34 @@ internal void Match (GutState * state, UInt32 token_type, char * message, ...)
         va_start(arguments, message);
 
         vprintf(message, arguments);
+
+        Assert(0, "Unexpected token\n");
     }
 }
 
-
-internal void Statements (GutState * state)
+internal void Identifier (GutState * state)
 {
-    Next(state);
+    PrintToken(state);
 
-    while (Current(state) != TOKEN_EOF)
+    Peek(state);
+
+    if (Is(Lookahead(state), TOKEN_PAREN_OPEN))
     {
-        Statement(state);
+        Next(state);
+
+        PrintToken(state);
+
+        Match(state, TOKEN_PAREN_OPEN, "Expected open paren.\n");
+
+        do {
+            Next(state);
+
+            Expression(state);
+        } while (Is(Next(state), TOKEN_COMMA));
+
+        Match(state, TOKEN_PAREN_CLOSE, "Expected closing parentheses\n");
+
+        PrintToken(state);
     }
 }
 
@@ -143,97 +206,93 @@ internal void Expression (GutState * state)
 }
 
 
-#define NewInteger(variable_name, i) GutTValue variable_name = {}; Type(variable_name) = TYPE_INTEGER; Integer(variable_name) = (i);
+internal void CheckBuffer (void * buffer, UInt32 element_size, UInt32 size)
+{
+    UNUSED(buffer);
+    UNUSED(element_size);
+    UNUSED(size);
+}
 
 
 internal UInt8 AddLocalVariable (GutState * state)
 {
-    GutFunction * current = Function(state);
-    GutTValue tagged_string, local_variable;
-
-    String(&tagged_string) = (GutString *)(&state->lexer->token.value);
-    Type(&tagged_string) = TYPE_STRING;
-
-    Type(&local_variable) = TYPE_INTEGER;
-    Integer(&local_variable) = (current->variables->count - 1);
-    // NewInteger(local_variable, function->variables->count - 1);
-
-    GutTableHashAdd(current->variables, String(&tagged_string)->hash, &tagged_string, &local_variable);
-
-    return (UInt8)Integer(&local_variable);
+    UNUSED(state);
 }
 
 
-internal UInt8 AddLiteral (GutState * state)
+internal UInt16 AddLiteral (GutState * state)
 {
-    GutFunction * current = Function(state);
-    GutTValue literal = state->lexer->token.value;
+    GutFunction * function = Function(state);
 
-    GutArrayPush(current->constants, &literal);
+    GutTValue literal = Value(state);
 
-    return (UInt8)current->constants->count - 1;
+    GutArrayPush(function->constants, &literal);
+
+    return (UInt16)function->constants->count - 1;
 }
 
 
-#define Emit(fn, op, n) n;
+internal void Assignment (GutState * state, UByte local_variable)
+{
+    PrintToken(state);
+
+    Next(state);
+
+    Expression(state);
+
+    Emit(state->function, OP_LOAD_LOCAL, local_variable);
+}
 
 
 internal void VarStatement (GutState * state)
 {
-    PrintToken(state);
-    // Match(state, TOKEN_LET, "Expected at let statement");
+    PrintToken(state); // Print TOKEN_VAR
 
-    Next(state);
+    Next(state); // Next token
 
+    PrintToken(state); // Print TOKEN_IDENTIFIER
+
+    // Anything other than an identifier is an error
     Match(state, TOKEN_IDENTIFIER, "Expected identifier");
 
-    UInt8 local = AddLocalVariable(state);
+    // Add the identifier to the local variables.
+    UByte local = 0; // AddLocalVariable(state);
 
-    if (Next(state) == TOKEN_EQ)
+    Next(state); // Next token
+
+    // If the next token is TOKEN_EQ, do assignment.
+    if (Is(Current(state), TOKEN_EQ))
     {
-        Next(state);
-
-        ParsePrecedence(state, PRECEDENCE_LOWEST);
-
-        Emit(state->function, OP_LOAD_LOCAL, local);
-    }
-
-    if (Current(state) == TOKEN_COMMA)
-    {
-        GrammarRule * rule = GetRule(Next(state));
-
-        Assert(rule->infix, "Expected comma");
-
-        rule->prefix(state);
+        Assignment(state, local);
     }
 }
 
 
 internal void Statement (GutState * state)
 {
-    GrammarRule * rule = GetRule(Current(state));
+    GrammarFn prefix = Prefix(Current(state));
 
-    Assert(rule->prefix, "Expected statement");
+    Assert(prefix, "Expected statement");
 
-    rule->prefix(state);
+    prefix(state);
 }
 
 
 internal void ParsePrecedence (GutState * state, Precedence precedence)
 {
-    GrammarRule * left = GetRule(Current(state));
+    GrammarFn prefix = Prefix(Current(state));
 
-    Assert(left->prefix, "Expected an expression.");
+    Assert(prefix, "Expected an expression.");
 
-    left->prefix(state);
+    prefix(state);
 
-    GrammarRule * operator = GetRule(Next(state));
+    Peek(state);
 
-    while (precedence < operator->precedence) {
-        Assert(operator->infix, "Expected an operator");
+    while (precedence < Precedence(Lookahead(state))) {
+        GrammarFn infix = Infix(Next(state));
 
-        operator->infix(state);
+        Assert(infix, "Expected an operator");
 
-        operator = GetRule(Next(state));
+        infix(state);
     }
 }

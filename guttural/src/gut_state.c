@@ -100,12 +100,11 @@ GutTValue * GutAddString (GutState * state, char * string, UInt32 length)
 
 
 // TODO (Emil): Check if we need to grow the stack.
-void GutPush (GutState * state, GutValue value, GutType type)
+void GutPush (GutState * state, int type, void * value)
 {
-    state->stack_pointer++;
-    GutTValue * tagged = state->stack_pointer;
-    tagged->value = value;
-    tagged->type = type;
+    *state;
+    type;
+    value;
 }
 
 

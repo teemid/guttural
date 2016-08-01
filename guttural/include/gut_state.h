@@ -15,15 +15,28 @@ typedef struct GutturalGlobalState
 } GutGlobalState;
 
 
+typedef struct CallFrame
+{
+    Instruction * ip;
+    GutFunction * function;
+    StackPtr stack_start;
+} CallFrame;
+
+
 typedef struct GutturalState
 {
     GutGlobalState * global_state;
     GutFunction * function;
 
+    CallFrame * callframes;
+    UInt32 callframe_count;
+    UInt32 callframe_capacity;
+
     GutLexerState * lexer;
 
     Int32 stack_size;
     StackPtr stack;
+    StackPtr top;
 
     UInt64 program_counter;
     StackPtr stack_pointer;

@@ -20,12 +20,12 @@ typedef enum {
 } Precedence;
 
 
-typedef void (* GrammarFunctionPtr) (GutState * state);
+typedef void (* GrammarFn) (GutState * state);
 
 
 typedef struct GrammarRule {
-    GrammarFunctionPtr prefix;
-    GrammarFunctionPtr infix;
+    GrammarFn prefix;
+    GrammarFn infix;
     Precedence precedence;
     char * name;
 } GrammarRule;

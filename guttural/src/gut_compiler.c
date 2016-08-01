@@ -1,16 +1,17 @@
+#include "gut_common.h"
 #include "gut_compiler.h"
+#include "gut_state.h"
 
 
-#define Function(state) (state)->function
+internal void GutCompileFunction (GutState * state);
 
 
-void GutCompilerEmit (GutState * state)
+void GutCompile (GutState * state)
 {
-    *state;
+    GutCompileFunction(state);
 }
 
-
-void GutCompilerAddConstant (GutState * state)
+internal void GutCompileFunction (GutState * state)
 {
-    *state;
+    UNUSED(state);
 }

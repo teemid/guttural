@@ -2,27 +2,24 @@
 #define GUTTURAL_H
 
 
-#include "gut_object.h"
-
-
 typedef struct GutturalState GutState;
 
 typedef void (*GutCFunction) (GutState * state);
+
+
+#define GUT_TYPE_INTEGER  0
+#define GUT_TYPE_DOUBLE   1
+#define GUT_TYPE_STRING   2
+#define GUT_TYPE_BOOLEAN  3
+#define GUT_TYPE_FUNCTION 4
+
 
 GutState * GutNewState (void);
 
 void GutDoFile (GutState * state, char * filename);
 
+void GutPush(GutState * state, int type, void * value);
 
-void GutPush (GutState * state, GutValue value, GutType type);
-
-#define GutPushNil(state)         GutPush(state, nil, TYPE_NIL)
-#define GutPushInteger(state, value)  GutValue v; v.i = (value); GutPush(state, v, TYPE_INTEGER)
-#define GutPushDouble(state, value)   GutValue v; v.d = (value); GutPush(state, v, TYPE_DOUBLE)
-#define GutPushBoolean(state, value)  GutValue v; v.b = (value); GutPush(state, v, TYPE_BOOLEAN)
-
-
-GutTValue GutPop (GutState * state);
 
 void GutRegister(GutState * state, GutCFunction function);
 
