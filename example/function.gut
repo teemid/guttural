@@ -1,7 +1,7 @@
-function example (arg1)
-    print(arg1)
+function add2 (n)
+    return n + 2
 end
 
-example(1)
-example("hello world")
-example(1.0)
+var y = add2(1)
+
+print(y)
