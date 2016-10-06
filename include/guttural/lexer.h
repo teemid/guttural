@@ -8,16 +8,7 @@ namespace guttural
 
     enum class Kind
     {
-        FUNCTION,
-        RETURN,
-        IF,
-        THEN,
-        WHILE,
-        DO,
-        END,
-        COMMA,
-        PERIOD,
-        EOF
+        Function
     };
 
     /*

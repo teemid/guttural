@@ -1,6 +1,8 @@
 #ifndef GUTTURAL_STRING_H
 #define GUTTURAL_STRING_H
 
+#include "guttural/common.h"
+
 
 namespace guttural
 {

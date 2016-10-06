@@ -1,6 +1,8 @@
 #ifndef GUTTURAL_MODULE_H
 #define GUTTURAL_MODULE_H
 
+#include "guttural/common.h"
+
 
 namespace guttural
 {

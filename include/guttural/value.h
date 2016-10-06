@@ -21,10 +21,10 @@ namespace guttural
 
     typedef union
     {
-        List list;
-        String string;
-        Table table;
-        Module module;
+        List * list;
+        String * string;
+        Table * table;
+        Module * module;
     } Object;
 
     enum class Type
@@ -34,17 +34,17 @@ namespace guttural
         Object
     };
 
-    typedef union
+    typedef union _Value
     {
         Object object;
         Real64 real;
         Int64  integer;
     } Value;
 
-    typedef struct
+    typedef struct _TaggedValue
     {
         Type type;
-        UValue value;
+        Value value;
     } TaggedValue;
 }
 

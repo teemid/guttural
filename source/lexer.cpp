@@ -9,6 +9,6 @@ namespace guttural
 
     Kind Lexer::Next (void)
     {
-        return Kind::EOF;
+        return Kind::Function;
     }
 }

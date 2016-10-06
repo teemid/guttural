@@ -1,18 +1,19 @@
 #ifndef GUTTURAL_LIST_H
 #define GUTTURAL_LIST_H
 
+#include "guttural/common.h"
+#include "guttural/value.h"
+
 
 namespace guttural
 {
-    typedef struct Value;
-
     class List
     {
         public:
             List (void);
             ~List (void);
         private:
-            std::unqiue_ptr<Value> values;
+            std::unique_ptr<TaggedValue> values;
             Size count;
             Size capacity;
     };

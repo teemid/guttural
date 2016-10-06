@@ -1,28 +1,34 @@
 #ifndef GUTTURAL_TABLE_H
 #define GUTTURAL_TABLE_H
 
+#include "guttural/common.h"
+#include "guttural/value.h"
+
 
 namespace guttural
 {
-    typedef struct Value;
-
     class Table
     {
     public:
         Table (void);
         ~Table (void);
 
-        Value Find (Value key);
-        void  Add (Value key, Value value);
-        Value Remove (Value key);
+        TaggedValue Find   (TaggedValue key);
+        void        Add    (Value key, TaggedValue tvalue);
+        TaggedValue Remove (TaggedValue key);
     private:
         typedef struct
         {
-            Value value;
+            TaggedValue tvalue;
+            Size index;
         } Key;
 
         std::unique_ptr<Key> keys;
-        std::unique_ptr<Value> values;
+        std::unique_ptr<TaggedValue> values;
+
+        Size count;
+        Size key_capacity;
+        Size value_capacity;
     };
 }
 

@@ -1,6 +1,8 @@
 #ifndef GUTTURAL_CLASS_H
 #define GUTTURAL_CLASS_H
 
+#include "guttural/common.h"
+
 
 namespace guttural
 {
