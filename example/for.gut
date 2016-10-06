@@ -1,0 +1,5 @@
+var l = [1, 2, 3, 4, 5]
+
+for e in l do
+    print(e)
+end

@@ -1,3 +1,6 @@
+from io import print
+
+
 class Greeter(Object)
     var name
 
@@ -9,6 +12,7 @@ class Greeter(Object)
         print('Hello, {name}'.format(name=name))
     end
 end
+
 
 greeter = Greeter('Emil')
 greeter.greet()

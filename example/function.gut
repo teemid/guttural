@@ -3,5 +3,3 @@ function add2 (n)
 end
 
 var y = add2(1)
-
-print(y)

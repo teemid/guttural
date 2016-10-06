@@ -1,13 +1,8 @@
-var a = []
+var a = [1, 'a']
 
-a.push(1)
-a.push('a')
-a.push(3.0)
 a.push('hello')
 a.push(5)
 
-var v = a.pop()
+var v = a.pop()  # Should give 'a'
 
-a.remove('a')
-
-print(a[2])
+a[0]  # Should give 1
