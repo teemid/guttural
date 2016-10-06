@@ -11,8 +11,8 @@
 #define Assert(expression, ...) \
     if (!expression) \
     { \
-        printf("Assertion: %s failed in %s at %s.\n", #expression, __FILE__, __LINE__); \
-        printf(...); \
+        printf("Assertion: %s failed in %s at %i.\n", #expression, __FILE__, __LINE__); \
+        printf(__VA_ARGS__); \
         \
         exit(1); \
     } \

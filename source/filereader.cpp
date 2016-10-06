@@ -12,4 +12,9 @@ namespace guttural
     {
 
     }
+
+    char FileReader::Next (void)
+    {
+        return 'a';
+    }
 }
