@@ -1,0 +1,23 @@
+import print from io
+
+
+function gcd (a, b)
+    if b > a then
+        var temp = b
+        b = a
+        a = temp
+    end
+
+    var quotient = a / b
+    var remainder = a % b
+
+    if remainder == 0 then
+        return b
+    else
+        return gcd(b, remainder)
+    end
+end
+
+
+# Find the greatest common divisor for 48 and 18 (this should return 6)
+print(gcd(48, 18))
