@@ -38,6 +38,14 @@ namespace Guttural
         Object,
     };
 
+    union UValue
+    {
+        double real;
+        int64_t integer;
+        bool boolean;
+        Object * object;
+    };
+
     struct Value
     {
         UValue value;
