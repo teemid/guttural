@@ -1,4 +1,4 @@
-function NewCounter ()
+function new_counter ()
     i = 0
 
     return function ()
@@ -7,7 +7,7 @@ function NewCounter ()
     end
 end
 
-var counter = NewCounter()
+var counter = new_counter()
 
-print(counter())
-print(counter())
+counter()  # Should give 1
+counter()  # Should give 2
