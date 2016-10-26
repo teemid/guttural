@@ -6,6 +6,8 @@
 
 namespace Guttural
 {
+    struct Value;
+
     class Map final : public Object
     {
     public:
@@ -15,8 +17,8 @@ namespace Guttural
         uint32_t Add (Value key, Value value);
         uint32_t Remove (Value key);
     private:
-        std::unique_ptr<Value> keys;
-        std::unique_ptr<Value> values;
+        Value * keys;
+        Value * values;
         size_t capacity;
         size_t count;
     };

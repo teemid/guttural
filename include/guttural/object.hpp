@@ -11,7 +11,7 @@ namespace Guttural
     public:
         Object (void);
 
-        virtual uint32_t Hash (void) = 0;
+        virtual uint32_t Hash (void);
     private:
         Object * next;
         Object * prev;

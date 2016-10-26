@@ -1,9 +1,8 @@
-#include "guttural/interpreter.h"
+#include "guttural/interpreter.hpp"
+#include "guttural/fiber.hpp"
 
 
-namespace guttural
+namespace Guttural
 {
-    Interpreter::Interpreter (void) { }
-
-    Interpreter::~Interpreter (void) { }
+    Interpreter::Interpreter (Fiber * fiber) : fiber(fiber) { }
 }

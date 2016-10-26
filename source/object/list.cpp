@@ -1,7 +1,7 @@
-#include "guttural/object/list.h"
+#include "guttural/object/list.hpp"
 
 
-namespace guttural
+namespace Guttural
 {
     List::List (void)
     {

@@ -8,4 +8,9 @@ namespace Guttural
         next = nullptr;
         prev = nullptr;
     }
+
+    uint32_t Object::Hash (void)
+    {
+        return 0; // TODO (Emil): Fallback hashing method?
+    }
 }

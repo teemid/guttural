@@ -13,9 +13,10 @@ namespace Guttural
         explicit String (char * string);
         String (char * string, size_t length);
 
-        Hash (void);
+        uint32_t Hash (void) override;
     private:
         char * c_str;
+        uint32_t hash;
         size_t length;
     };
 }

@@ -1,6 +1,8 @@
 #ifndef GUTTURAL_FUNCTION_H
 #define GUTTURAL_FUNCTION_H
 
+#include "guttural/object.hpp"
+
 
 namespace Guttural
 {

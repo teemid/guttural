@@ -1,9 +1,7 @@
-#include "guttural/object/module.h"
+#include "guttural/object/module.hpp"
 
 
-namespace guttural
+namespace Guttural
 {
     Module::Module (void) { }
-
-    Module::~Module (void) { }
 }

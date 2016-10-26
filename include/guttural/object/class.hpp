@@ -11,6 +11,8 @@ namespace Guttural
     class Klass final : public Object
     {
     public:
+        Klass (void);
+        ~Klass (void);
     private:
         String * name;
     };

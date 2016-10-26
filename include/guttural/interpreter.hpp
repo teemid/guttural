@@ -1,15 +1,17 @@
-#ifndef GUTTURAL_INTERPRETER_H
-#define GUTTURAL_INTERPRETER_H
+#ifndef GUTTURAL_INTERPRETER_HPP
+#define GUTTURAL_INTERPRETER_HPP
 
 
 namespace Guttural
 {
+    struct Fiber;
+
     class Interpreter
     {
     public:
-        Interpreter ();
+        Interpreter (Fiber * fiber);
     private:
-        GutturalState * state;
+        Fiber * fiber;
     };
 }
 

@@ -1,12 +1,15 @@
 #include <iostream>
+#include "guttural.hpp"
 
 
 int main (int argc, char * argv[])
 {
-    for (auto i = 0; i < argc; i++)
+    if (argc < 1)
     {
-        std::cout << argv[i] << std::endl;
+        std::cout << "Expected a filename.\n";
     }
+
+    Guttural::InterpretFile(argv[0]);
 
     return 0;
 }

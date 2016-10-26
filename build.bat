@@ -13,7 +13,7 @@ IF "%1" == "repl" GOTO repl
     SET MACROS=/DGUTTURAL_DEBUG
     SET COMPILER_FLAGS=/nologo /EHsc /Od /W4 /wd4127 /wd4996 /Zi /Fobuild\repl\ /Fdbuild\repl\ /c /I "include"
 
-    FOR /r %%f IN ("source\*.cpp") DO cl %COMPILER_FLAGS% "%%f" %MACROS%
+    FOR /r source %%f IN ("*.cpp") DO cl %COMPILER_FLAGS% "%%f" %MACROS%
 
     cl %COMPILER_FLAGS% target\repl.cpp %MACROS%
 

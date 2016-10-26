@@ -1,6 +1,8 @@
 #ifndef GUTTURAL_LIST_H
 #define GUTTURAL_LIST_H
 
+#include <memory>
+
 #include "guttural/object.hpp"
 
 
@@ -14,7 +16,7 @@ namespace Guttural
         List (void);
         ~List (void);
     private:
-        std::unique_ptr<Value> buffer;
+        Value * buffer;
         size_t capacity;
         size_t count;
     };

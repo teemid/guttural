@@ -1,9 +1,15 @@
-#include "guttural/parser.h"
+#include "guttural/parser.hpp"
+#include "guttural/fiber.hpp"
+#include "guttural/lexer.hpp"
 
 
-namespace guttural
+namespace Guttural
 {
     Parser::Parser (void) { }
 
-    Parser::~Parser (void) { }
+    void Parser::parse (Lexer * lexer, Fiber * fiber)
+    {
+        UNUSED(lexer);
+        UNUSED(fiber);
+    }
 }
